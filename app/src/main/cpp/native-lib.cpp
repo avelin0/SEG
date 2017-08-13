@@ -42,11 +42,19 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_FindFeatures(JNIEn
 
     cv::Ptr<cv::FeatureDetector> detector = cv::FastFeatureDetector::create(50);
     detector->detect(mGr, v);
-    for( unsigned int i = 0; i < v.size(); i++ )
-    {
+    for( unsigned int i = 0; i < v.size(); i++ ) {
         const cv::KeyPoint& kp = v[i];
-        circle(mRgb, cv::Point(kp.pt.x, kp.pt.y), 10, cv::Scalar(255,0,0,255));
+        cv::circle(mRgb, cv::Point(kp.pt.x, kp.pt.y), 10, cv::Scalar(255,0,0,255));
     }
+}
+JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_thresh(JNIEnv*, jobject,
+                                                                        jlong scrGray,
+                                                                        jlong dst,
+                                                                     double thresholdValue=230.0,
+                                                                     double maxVal=255.0){
+    cv::Mat matDst = *((cv::Mat*)dst);
+    cv::Mat matSrcGray = *((cv::Mat*)scrGray);
+    threshold( matSrcGray, matDst, thresholdValue, maxVal, CV_THRESH_BINARY);
 }
 }
 
