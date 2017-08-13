@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--tools:context="com.example.bruno.seg.CameraManip">-->
+
+    <!--<Button-->
+        <!--android:id="@+id/main_butt_galeria"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Galeria"-->
+        <!--tools:layout_editor_absoluteX="148dp"-->
+        <!--tools:layout_editor_absoluteY="199dp" />-->
+
+    <!--<Button-->
+        <!--android:id="@+id/main_butt_camera"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Câmera"-->
+        <!--tools:layout_editor_absoluteX="263dp"-->
+        <!--tools:layout_editor_absoluteY="75dp" />-->
+
+<!--</android.support.constraint.ConstraintLayout>-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/main_butt_galeria"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Galeria"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="199dp" />
+
+    <Button
+        android:id="@+id/main_butt_camera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Câmera"
+        tools:layout_editor_absoluteX="263dp"
+        tools:layout_editor_absoluteY="75dp" />
+
+
+</LinearLayout>
