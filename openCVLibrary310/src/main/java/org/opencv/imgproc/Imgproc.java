@@ -1189,8 +1189,7 @@ public class Imgproc {
     }
 
     //javadoc: Sobel(src, dst, ddepth, dx, dy)
-    public static void Sobel(Mat src, Mat dst, int ddepth, int dx, int dy)
-    {
+    public static void Sobel(Mat src, Mat dst, int ddepth, int dx, int dy) {
         
         Sobel_2(src.nativeObj, dst.nativeObj, ddepth, dx, dy);
         
