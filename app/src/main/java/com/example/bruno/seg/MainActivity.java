@@ -24,5 +24,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
 //        Button to Galeria
+        Button btnGal = (Button)findViewById(R.id.main_butt_galeria);
+
+        btnGal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                startActivity(new Intent(MainActivity.this, GalleryActivity.class));
+            }
+        });
     }
 }

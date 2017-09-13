@@ -17,6 +17,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 
@@ -182,23 +183,26 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
 //                Imgproc.erode(threeChannel, fg, new Mat(), new Point(-1, -1), 2);
 //                Imgproc.dilate(threeChannel, bg, new Mat(), new Point(-1, -1), 3);
 //                Imgproc.threshold(bg, bg, 1, 128, Imgproc.THRESH_BINARY_INV);
-//
+//                Imgproc.threshold(mRgba,mRgba,1,128,Imgproc.THRESH_BINARY);
+//                Imgproc.
+
 //                Mat markers = new Mat(mRgb.size(), CvType.CV_8U, new Scalar(0));
 //                Core.add(fg, bg, markers);
 //                mRgba.convertTo(mRgba,CvType.CV_8UC3);
 //                markers.convertTo(markers, CvType.CV_32SC1);
 //                Imgproc.watershed(mRgba, markers);
 //                markers.convertTo(mRgba, CvType.CV_8U);
-//
-                Mat inter = new Mat();
-                Imgproc.cvtColor(mRgba,inter,Imgproc.COLOR_BGRA2BGR);
-                inter=steptowatershed(inter);
-                inter.copyTo(mRgba);
+//                Imgproc.
+//                Mat inter = new Mat();
+//                Imgproc.cvtColor(mRgba,inter,Imgproc.COLOR_BGRA2BGR);
+//                inter=steptowatershed(inter);
+//                inter.copyTo(mRgba);
 //                Imgproc.cvtColor(inter,mRgba,Imgproc.COLOR_BGR2BGRA);
+//                to_gray(mRgba.getNativeObjAddr());
+//                salt(mRgba.getNativeObjAddr(),1000000);
+//                morphoOp(mRgba.getNativeObjAddr(),mRgba.getNativeObjAddr());
+//                Imgproc.morphologyEx(mRgba,mRgba,);
                 break;
-
-
-
         }
 
         return mRgba;
@@ -271,8 +275,10 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
      * which is packaged with this application.
      */
     public native String stringFromJNI();
-    public native String validate(long matAddrGr,long matAddrRgba);
     public native void FindFeatures(long matAddrGr, long matAddrRgba);
     public native void thresh(long matAddrRgba,long matDst);
+    public native void salt(long matAddrGray, int nbrElem);
+    public native void morphoOp(long matSrc, long matDst);
+//    public native void to_gray(long matAddr);
 
 }
