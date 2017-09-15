@@ -19,6 +19,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -26,9 +27,12 @@ import android.widget.Toast;
 import org.opencv.android.Utils;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class GalleryActivity extends AppCompatActivity {
 
@@ -77,10 +81,10 @@ public class GalleryActivity extends AppCompatActivity {
                 // we are getting an input stream, based on the URI of the image.
                 try {
                     inputStream = getContentResolver().openInputStream(imageUri);
-
+                    Log.i("String -> ",InputStream2String(inputStream));
                     // get a bitmap from the stream.
                     Bitmap image = BitmapFactory.decodeStream(inputStream);
-//                    myfunction(image);
+
 
 
 
@@ -93,12 +97,24 @@ public class GalleryActivity extends AppCompatActivity {
                     e.printStackTrace();
                     // show a message to the user indictating that the image is unavailable.
                     Toast.makeText(this, "Unable to open image", Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
     }
 
 //    public native void myfunction(long mBitmap);
+
+    public String InputStream2String(InputStream inputStream) throws IOException {
+        BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder total = new StringBuilder();
+        String line;
+        while ((line = r.readLine()) != null) {
+            total.append(line).append('\n');
+        }
+        return total.toString();
+    }
 
     public static Bitmap applyReflection(Bitmap originalImage) {
         // gap space between original and reflected
