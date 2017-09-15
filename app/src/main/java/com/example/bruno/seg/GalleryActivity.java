@@ -24,7 +24,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.BufferedReader;
@@ -33,17 +37,26 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.Buffer;
+import java.util.ArrayList;
 
 public class GalleryActivity extends AppCompatActivity {
 
     public static final int IMAGE_GALLERY_REQUEST = 20;
-    private ImageView imgPicture;
+    public ImageView imgPicture;
+    public Bitmap lastBitmap;
+    public Mat mMat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
+        if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0,
+                GalleryActivity.this, mOpenCVCallBack)) {
+            Log.e("TEST", "Cannot connect to OpenCV Manager");
+        }
+//        mMat=new Mat();
         // get a reference to the image view that holds the image that the user will see.
         imgPicture = (ImageView) findViewById(R.id.imgPicture);
     }
@@ -66,6 +79,23 @@ public class GalleryActivity extends AppCompatActivity {
         startActivityForResult(photoPickerIntent, IMAGE_GALLERY_REQUEST);
     }
 
+    private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS: {
+                    Log.i("GalleryActivity::OpenCV", "OpenCV loaded successfully");
+                    mMat=new Mat();
+                }
+                break;
+                default: {
+                    super.onManagerConnected(status);
+                }
+                break;
+            }
+        }
+    };
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
@@ -81,40 +111,22 @@ public class GalleryActivity extends AppCompatActivity {
                 // we are getting an input stream, based on the URI of the image.
                 try {
                     inputStream = getContentResolver().openInputStream(imageUri);
-//                    Log.i("String -> ",InputStream2String(inputStream));
-                    // get a bitmap from the stream.
                     Bitmap image = BitmapFactory.decodeStream(inputStream);
-
-
-
-
+                    lastBitmap=Bitmap.createBitmap(image);
 
                     // show the image to the user
 
-                    imgPicture.setImageBitmap(applyReflection(image));
+                    imgPicture.setImageBitmap(image);
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     // show a message to the user indictating that the image is unavailable.
                     Toast.makeText(this, "Unable to open image", Toast.LENGTH_LONG).show();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         }
     }
 
-//    public native void myfunction(long mBitmap);
-
-//    public String InputStream2String(InputStream inputStream) throws IOException {
-//        BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-//        StringBuilder total = new StringBuilder();
-//        String line;
-//        while ((line = r.readLine()) != null) {
-//            total.append(line).append('\n');
-//        }
-//        return total.toString();
-//    }
 
     public static Bitmap applyReflection(Bitmap originalImage) {
         // gap space between original and reflected
@@ -160,5 +172,17 @@ public class GalleryActivity extends AppCompatActivity {
 
         return bitmapWithReflection;
     }
+
+
+    public void ClickWatersheed(View v){
+        if(lastBitmap != null ) {
+            Utils.bitmapToMat(lastBitmap, mMat);
+            Imgproc.cvtColor(mMat,mMat,Imgproc.COLOR_BGRA2GRAY);
+            Utils.matToBitmap(mMat,lastBitmap);
+
+            imgPicture.setImageBitmap(lastBitmap);
+        }
+    }
+
 }
 
