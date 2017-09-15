@@ -23,6 +23,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.opencv.android.Utils;
+import org.opencv.imgproc.Imgproc;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -77,6 +80,9 @@ public class GalleryActivity extends AppCompatActivity {
 
                     // get a bitmap from the stream.
                     Bitmap image = BitmapFactory.decodeStream(inputStream);
+//                    myfunction(image);
+
+
 
 
                     // show the image to the user
@@ -91,6 +97,8 @@ public class GalleryActivity extends AppCompatActivity {
             }
         }
     }
+
+//    public native void myfunction(long mBitmap);
 
     public static Bitmap applyReflection(Bitmap originalImage) {
         // gap space between original and reflected
@@ -120,6 +128,7 @@ public class GalleryActivity extends AppCompatActivity {
         canvas.drawRect(0, height, width, height + reflectionGap, defaultPaint);
         // draw in the reflection
         canvas.drawBitmap(reflectionImage,0, height + reflectionGap, null);
+
 
         // create a shader that is a linear gradient that covers the reflection
         Paint paint = new Paint();

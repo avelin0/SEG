@@ -34,7 +34,7 @@
             android:layout_weight="1"
             android:nestedScrollingEnabled="true"
             android:onClick="onImageGalleryClicked"
-            android:text="@string/lblOpenExistingImage" />
+            android:text="LOAD" />
 
         <Button
             android:id="@+id/btnWatersheed"

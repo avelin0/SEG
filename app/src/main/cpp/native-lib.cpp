@@ -4,6 +4,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/features2d/features2d.hpp>
 #include <vector>
+#include <android/bitmap.h>
 
 extern "C"{
 
@@ -105,6 +106,111 @@ JNIEXPORT cv::Mat JNICALL Java_com_example_bruno_seg_GalleryActivity_to_gray(
 //    show_image(src,mensagem);
     return matDst;
 }
+
+//JNIEXPORT jobject Java_com_example_bruno_seg_GalleryActivity_mat_to_bitmap(JNIEnv * env, Mat & src,
+//                                                                           bool needPremultiplyAlpha, jobject bitmap_config){
+//
+//    jclass java_bitmap_class = (jclass)env->FindClass("android/graphics/Bitmap");
+//    jmethodID mid = env->GetStaticMethodID(java_bitmap_class,
+//                                           "createBitmap", "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;");
+//
+//    jobject bitmap = env->CallStaticObjectMethod(java_bitmap_class,
+//                                                 mid, src.size().width, src.size().height, bitmap_config);
+//    AndroidBitmapInfo  info;
+//    void* pixels = 0;
+//
+//    try {
+//        //validate
+//        CV_Assert(AndroidBitmap_getInfo(env, bitmap, &info) >= 0);
+//        CV_Assert(src.type() == CV_8UC1 || src.type() == CV_8UC3 || src.type() == CV_8UC4);
+//        CV_Assert(AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0);
+//        CV_Assert(pixels);
+//
+//        //type mat
+//        if(info.format == ANDROID_BITMAP_FORMAT_RGBA_8888){
+//            Mat tmp(info.height, info.width, CV_8UC4, pixels);
+//            if(src.type() == CV_8UC1){
+//                cvtColor(src, tmp, CV_GRAY2RGBA);
+//            } else if(src.type() == CV_8UC3){
+//                cvtColor(src, tmp, CV_RGB2RGBA);
+//            } else if(src.type() == CV_8UC4){
+//                if(needPremultiplyAlpha){
+//                    cvtColor(src, tmp, COLOR_RGBA2mRGBA);
+//                }else{
+//                    src.copyTo(tmp);
+//                }
+//            }
+//        } else{
+//            Mat tmp(info.height, info.width, CV_8UC2, pixels);
+//            if(src.type() == CV_8UC1){
+//                cvtColor(src, tmp, CV_GRAY2BGR565);
+//            } else if(src.type() == CV_8UC3){
+//                cvtColor(src, tmp, CV_RGB2BGR565);
+//            } else if(src.type() == CV_8UC4){
+//                cvtColor(src, tmp, CV_RGBA2BGR565);
+//            }
+//        }
+//        AndroidBitmap_unlockPixels(env, bitmap);
+//        return bitmap;
+//    } catch(cv::Exception e){
+//        AndroidBitmap_unlockPixels(env, bitmap);
+//        jclass je = env->FindClass("org/opencv/core/CvException");
+//        if(!je) je = env->FindClass("java/lang/Exception");
+//        env->ThrowNew(je, e.what());
+//        return bitmap;
+//    } catch (...){
+//        AndroidBitmap_unlockPixels(env, bitmap);
+//        jclass je = env->FindClass("java/lang/Exception");
+//        env->ThrowNew(je, "Unknown exception in JNI code {nMatToBitmap}");
+//        return bitmap;
+//    }
+//}
+//
+//
+//JNIEXPORT jobject JNICALL Java_com_example_bruno_seg_GalleryActivity_myfunction
+//        (JNIEnv *env, jclass ob, jobject bitmap){
+//
+//    Mat src = new Mat(10,10,CV_8UC1);
+//
+//
+//
+//    //get source bitmap's config
+//    jclass java_bitmap_class = (jclass)env->FindClass("android/graphics/Bitmap");
+//    jmethodID mid = env->GetMethodID(java_bitmap_class, "getConfig", "()Landroid/graphics/Bitmap$Config;");
+//    jobject bitmap_config = env->CallObjectMethod(bitmap, mid);
+//    jobject _bitmap = mat_to_bitmap(env, src, false, bitmap_config);
+//
+//    AndroidBitmap_unlockPixels(env, bitmap);
+//
+//    //and finally you can get bitmap for android
+//    return _bitmap;
+//}
+
+//JNIEXPORT jobject JNICALL Java_com_example_bruno_seg_GalleryActivity_myfunction
+//        (JNIEnv *env, jclass ob, jobject bitmap){
+//    int ret;
+//    AndroidBitmapInfo info;
+//    void* pixels = 0;
+//
+//    if ((ret = AndroidBitmap_getInfo(env, bitmap, &info)) < 0) {
+////        __android_log_print(ANDROID_LOG_VERBOSE, APPNAME,"AndroidBitmap_getInfo() failed ! error=%d", ret);
+//        return NULL;
+//    }
+//
+//    if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888 ) {
+////        __android_log_print(ANDROID_LOG_VERBOSE, APPNAME,"Bitmap format is not RGBA_8888!");
+//
+//        return NULL;
+//    }
+//
+//    if ((ret = AndroidBitmap_lockPixels(env, bitmap, &pixels)) < 0) {
+////        __android_log_print(ANDROID_LOG_VERBOSE, APPNAME,"AndroidBitmap_lockPixels() failed ! error=%d", ret);
+//    }
+//
+//    // init our output image
+//    Mat mbgra(info.height, info.width, CV_8UC4, pixels);
+//
+//}
 
 }
 
