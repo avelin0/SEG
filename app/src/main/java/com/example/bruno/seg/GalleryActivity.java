@@ -81,7 +81,7 @@ public class GalleryActivity extends AppCompatActivity {
                 // we are getting an input stream, based on the URI of the image.
                 try {
                     inputStream = getContentResolver().openInputStream(imageUri);
-                    Log.i("String -> ",InputStream2String(inputStream));
+//                    Log.i("String -> ",InputStream2String(inputStream));
                     // get a bitmap from the stream.
                     Bitmap image = BitmapFactory.decodeStream(inputStream);
 
@@ -106,15 +106,15 @@ public class GalleryActivity extends AppCompatActivity {
 
 //    public native void myfunction(long mBitmap);
 
-    public String InputStream2String(InputStream inputStream) throws IOException {
-        BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-        StringBuilder total = new StringBuilder();
-        String line;
-        while ((line = r.readLine()) != null) {
-            total.append(line).append('\n');
-        }
-        return total.toString();
-    }
+//    public String InputStream2String(InputStream inputStream) throws IOException {
+//        BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+//        StringBuilder total = new StringBuilder();
+//        String line;
+//        while ((line = r.readLine()) != null) {
+//            total.append(line).append('\n');
+//        }
+//        return total.toString();
+//    }
 
     public static Bitmap applyReflection(Bitmap originalImage) {
         // gap space between original and reflected
