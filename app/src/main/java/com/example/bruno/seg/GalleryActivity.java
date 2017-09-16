@@ -49,6 +49,12 @@ public class GalleryActivity extends AppCompatActivity {
     public Mat mMatDst;
     public Mat mGray;
 
+    static {
+        if (!OpenCVLoader.initDebug()) {
+            Log.d("Gallery Activity","OpenCV not initialized");
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,6 +199,9 @@ public class GalleryActivity extends AppCompatActivity {
             imgPicture.setImageBitmap(lastBitmap);
         }
     }
+
+
+
 //    public native void toGray(long matAddrSrc,long matAddrDst);
     public native void FindFeatures(long addrGray,long addrRgba);
 
