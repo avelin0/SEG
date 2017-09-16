@@ -57,16 +57,15 @@ public class Watersheed {
             val = img.clone();
 
             //inicializar os valores
-//        TODO: verificar como acessar rows e cols no java
-            for (int x = 0; x < img.rows; x++) {
-                for (int y = 0; y < img.cols; y++) {
+            for (int x = 0; x < img.rows(); x++) {
+                for (int y = 0; y < img.cols(); y++) {
                     lab.at<float>(x, y) = INIT;
                     val.at<float>(x, y) = INIT;
                 }
             }
             //encontra menor pixel de cada vizinhanca
-            for (int x = 0; x < img.rows; x++) {
-                for (int y = 0; y < img.cols; y++) {
+            for (int x = 0; x < img.rows(); x++) {
+                for (int y = 0; y < img.cols(); y++) {
                     step1(x, y);
                 }
             }
@@ -75,8 +74,8 @@ public class Watersheed {
             while (scan_step2 == 1) {
                 changed = 0;
                 //scan top left >> bottom right
-                for (int x = 0; x < img.rows; x++) {
-                    for (int y = 0; y < img.cols; y++) {
+                for (int x = 0; x < img.rows(); x++) {
+                    for (int y = 0; y < img.cols(); y++) {
                         step2(x, y);
                     }
                 }
@@ -85,8 +84,8 @@ public class Watersheed {
                 } else {
                     changed = 0;
                     //scan bottom right >> top left
-                    for (int x = img.rows - 1; x >= 0; x--) {
-                        for (int y = img.cols - 1; y >= 0; y--) {
+                    for (int x = img.rows() - 1; x >= 0; x--) {
+                        for (int y = img.cols() - 1; y >= 0; y--) {
                             step2(x, y);
                         }
                     }
@@ -103,8 +102,8 @@ public class Watersheed {
                 if (limite == 10) break;
                 changed = 0;
                 //scan top left >> bottom right
-                for (int x = 0; x < img.rows; x++) {
-                    for (int y = 0; y < img.cols; y++) {
+                for (int x = 0; x < img.rows(); x++) {
+                    for (int y = 0; y < img.cols(); y++) {
                         step3(x, y);
                     }
                 }
@@ -114,8 +113,8 @@ public class Watersheed {
                 } else {
                     changed = 0;
                     //scan bottom right >> top left
-                    for (int x = img.rows - 1; x >= 0; x--) {
-                        for (int y = img.cols - 1; y >= 0; y--) {
+                    for (int x = img.rows() - 1; x >= 0; x--) {
+                        for (int y = img.cols() - 1; y >= 0; y--) {
                             step3(x, y);
                         }
                     }
@@ -126,8 +125,8 @@ public class Watersheed {
             }
 
             max_pixel = 0;
-            for (int x = 0; x < lab.rows; x++) {
-                for (int y = 0; y < lab.cols; y++) {
+            for (int x = 0; x < lab.rows(); x++) {
+                for (int y = 0; y < lab.cols(); y++) {
                     if (max_pixel < lab.at<float>(x, y)) max_pixel = lab.at<float>(x, y);
                 }
             }
@@ -142,6 +141,7 @@ public class Watersheed {
         // Gera cores aleatorias
 //        TODO: verificar como acesso Vec3b no java
         vector<Vec3b> colors;
+//        TODO: size_t?
         for (size_t i = 0; i < 255; i++) {
 //            verificar theRNG no java
             int b = theRNG().uniform(10, 255);
@@ -155,8 +155,8 @@ public class Watersheed {
         Mat dst = Mat::zeros(color.size(), CV_8UC3);
 
         // Pinta cada area de uma cor
-        for (int i = 0; i < color.rows; i++) {
-            for (int j = 0; j < color.cols; j++) {
+        for (int i = 0; i < color.rows(); i++) {
+            for (int j = 0; j < color.cols(); j++) {
 
                 color.convertTo(color, CV_32F);
 //                TODO: verificar acesso a cada pixel no java ( uso do at)
@@ -177,7 +177,7 @@ public class Watersheed {
         if (cmpf(val.at<float>(x, y), 0.0)) {
             for (int i = -windowSize; i <= windowSize; i++) {
                 for (int j = -windowSize; j <= windowSize; j++) {
-                    if (x + i >= 0 && y + j >= 0 && x + i <= img.rows - 1 && y + j <= img.cols - 1 && !(i == 0 && j == 0)) {
+                    if (x + i >= 0 && y + j >= 0 && x + i <= img.rows() - 1 && y + j <= img.cols() - 1 && !(i == 0 && j == 0)) {
                         if (cmpf(img.at<float>(x, y), img.at<float>(x + i, y + j)) && lab.at<float>(x + i, y + j) > 0.0 &&
                                 lab.at<float>(x + i, y + j) < lmin) {
                             lmin = lab.at<float>(x + i, y + j);
@@ -192,7 +192,7 @@ public class Watersheed {
             if (cmpf(val.at<float>(x, y), 1.0)) {
                 for (int i = -windowSize; i <= windowSize; i++) {
                     for (int j = -windowSize; j <= windowSize; j++) {
-                        if (x + i >= 0 && y + j >= 0 && x + i <= img.rows - 1 && y + j <= img.cols - 1 &&
+                        if (x + i >= 0 && y + j >= 0 && x + i <= img.rows() - 1 && y + j <= img.cols() - 1 &&
                                 !(i == 0 && j == 0)) {
                             if (img.at<float>(x + i, y + j) < fmin) {
                                 fmin = img.at<float>(x + i, y + j);
@@ -203,7 +203,7 @@ public class Watersheed {
 
                 for (int i = -windowSize; i <= windowSize; i++) {
                     for (int j = -windowSize; j <= windowSize; j++) {
-                        if (x + i >= 0 && y + j >= 0 && x + i <= img.rows - 1 && y + j <= img.cols - 1 &&
+                        if (x + i >= 0 && y + j >= 0 && x + i <= img.rows() - 1 && y + j <= img.cols() - 1 &&
                                 !(i == 0 && j == 0)) {
                             if (cmpf(img.at<float>(x + i, y + j), fmin) && lab.at<float>(x + i, y + j) > 0.0 &&
                                     lab.at<float>(x + i, y + j) < lmin) {
@@ -215,7 +215,7 @@ public class Watersheed {
             } else {
                 for (int i = -windowSize; i <= windowSize; i++) {
                     for (int j = -windowSize; j <= windowSize; j++) {
-                        if (x + i >= 0 && y + j >= 0 && x + i <= img.rows - 1 && y + j <= img.cols - 1 &&
+                        if (x + i >= 0 && y + j >= 0 && x + i <= img.rows() - 1 && y + j <= img.cols() - 1 &&
                                 !(i == 0 && j == 0)) {
                             if (cmpf(img.at<float>(x + i, y + j), img.at<float>(x, y)) &&
                             cmpf(val.at<float>(x + i, y + j), (val.at<float>(x, y) - 1.0)) &&
@@ -240,7 +240,7 @@ public class Watersheed {
             for (int i = -windowSize; i <= windowSize; i++) {
                 for (int j = -windowSize; j <= windowSize; j++) {
                     if (!(i == 0 && j == 0)) {
-                        if (x + i >= 0 && y + j >= 0 && x + i <= img.rows - 1 && y + j <= img.cols - 1) {
+                        if (x + i >= 0 && y + j >= 0 && x + i <= img.rows() - 1 && y + j <= img.cols() - 1) {
                             //min = maior vizinho
                             //encontra o maior valor vizinho de minimo
                             if (img.at<float>(x, y) == img.at<float>(x + i, y + j) && val.at<float>(x + i, y + j) > 0 &&
@@ -269,7 +269,7 @@ public class Watersheed {
                 for (int j =- windowSize; j <= windowSize; j++) {
                     //Casos de borda
                     if (!(i == 0 && j == 0)) {
-                        if (x + i >= 0 && y + j >= 0 && x + i <= img.rows - 1 && y + j <= img.cols - 1) {
+                        if (x + i >= 0 && y + j >= 0 && x + i <= img.rows() - 1 && y + j <= img.cols() - 1) {
 
                             if (img.at<float>(x, y) > img.at<float>(x + i, y + j)) {
                                 val.at<float>(x, y) = 1.0;
