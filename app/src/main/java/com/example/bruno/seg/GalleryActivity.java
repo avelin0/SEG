@@ -46,6 +46,8 @@ public class GalleryActivity extends AppCompatActivity {
     public ImageView imgPicture;
     public Bitmap lastBitmap;
     public Mat mMat;
+    public Mat mMatDst;
+    public Mat mGray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class GalleryActivity extends AppCompatActivity {
         if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0,
                 GalleryActivity.this, mOpenCVCallBack)) {
             Log.e("TEST", "Cannot connect to OpenCV Manager");
+            System.loadLibrary("native-lib");
         }
 //        mMat=new Mat();
         // get a reference to the image view that holds the image that the user will see.
@@ -63,19 +66,12 @@ public class GalleryActivity extends AppCompatActivity {
 
 
     public void onImageGalleryClicked(View v) {
-        // invoke the image gallery using an implict intent.
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-
-        // where do we want to find the data?
         File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         String pictureDirectoryPath = pictureDirectory.getPath();
-        // finally, get a URI representation
         Uri data = Uri.parse(pictureDirectoryPath);
-
-        // set the data and type.  Get all image types.
         photoPickerIntent.setDataAndType(data, "image/*");
 
-        // we will invoke this activity, and get something back from it.
         startActivityForResult(photoPickerIntent, IMAGE_GALLERY_REQUEST);
     }
 
@@ -85,7 +81,10 @@ public class GalleryActivity extends AppCompatActivity {
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.i("GalleryActivity::OpenCV", "OpenCV loaded successfully");
+
                     mMat=new Mat();
+                    mMatDst=new Mat();
+                    mGray=new Mat();
                 }
                 break;
                 default: {
@@ -177,12 +176,28 @@ public class GalleryActivity extends AppCompatActivity {
     public void ClickWatersheed(View v){
         if(lastBitmap != null ) {
             Utils.bitmapToMat(lastBitmap, mMat);
-            Imgproc.cvtColor(mMat,mMat,Imgproc.COLOR_BGRA2GRAY);
+            Imgproc.cvtColor(mMat,mMatDst,Imgproc.COLOR_BGRA2GRAY);
+//            toGray(mMat.getNativeObjAddr(),mMat.getNativeObjAddr());
+
+//            Imgproc.bilateralFilter(mMat,mMatDst,15,80,80);
+//            Aqui Morphologic Operation
+
+
+//            Aqui Sobel
+//            Imgproc.Canny(mMatDst, mMatDst, 80, 100);
+
+//            FindFeatures(mMatDst.getNativeObjAddr(),mMat.getNativeObjAddr());
+
             Utils.matToBitmap(mMat,lastBitmap);
 
             imgPicture.setImageBitmap(lastBitmap);
         }
     }
+//    public native void toGray(long matAddrSrc,long matAddrDst);
+    public native void FindFeatures(long addrGray,long addrRgba);
+
 
 }
+
+
 

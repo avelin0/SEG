@@ -160,7 +160,7 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
                 break;
             case VIEW_MODE_SOBEL:
                 mRgba = inputFrame.rgba();
-                Imgproc.Sobel(inputFrame.gray(),mRgba,-1,1,1);
+                Imgproc.Sobel(inputFrame.gray(),mRgba,CvType.CV_16S,1,1,3,1,0);
                 break;
             case VIEW_MODE_FEATURES:
                 // input frame has RGBA format
@@ -200,8 +200,6 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
 //                Imgproc.cvtColor(inter,mRgba,Imgproc.COLOR_BGR2BGRA);
 //                to_gray(mRgba.getNativeObjAddr());
 //                salt(mRgba.getNativeObjAddr(),1000000);
-//                morphoOp(mRgba.getNativeObjAddr(),mRgba.getNativeObjAddr());
-//                Imgproc.morphologyEx(mRgba,mRgba,);
                 break;
         }
 

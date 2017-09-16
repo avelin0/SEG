@@ -59,6 +59,23 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_FindFeatures(JNIEn
         cv::circle(mRgb, cv::Point(kp.pt.x, kp.pt.y), 10, cv::Scalar(255,0,0,255));
     }
 }
+
+JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_FindFeatures(JNIEnv*, jobject,
+                                                                           jlong addrGray,
+                                                                           jlong addrRgba) {
+    cv::Mat& mGr  = *(cv::Mat*)addrGray;
+    cv::Mat& mRgb = *(cv::Mat*)addrRgba;
+    std::vector<cv::KeyPoint> v;
+
+    cv::Ptr<cv::FeatureDetector> detector = cv::FastFeatureDetector::create(50);
+    detector->detect(mGr, v);
+    for( unsigned int i = 0; i < v.size(); i++ ) {
+        const cv::KeyPoint& kp = v[i];
+        cv::circle(mRgb, cv::Point(kp.pt.x, kp.pt.y), 10, cv::Scalar(255,0,0,255));
+    }
+}
+
+
 JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_thresh(JNIEnv *env, jobject obj,
                                                                         jlong scrGray,
                                                                         jlong dst,
@@ -69,7 +86,7 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_thresh(JNIEnv *env
     threshold( matSrcGray, matDst, thresholdValue, maxVal, CV_THRESH_BINARY);
 }
 
-JNIEXPORT cv::Mat JNICALL Java_com_example_bruno_seg_GalleryActivity_sobel(
+JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_sobel(
         JNIEnv *env, jobject obj,
         cv::Mat src_gray,int scale = 1,int delta = 0,int ddepth = CV_16S,
         std::string mensagem="Sobel Image"){
@@ -91,21 +108,21 @@ JNIEXPORT cv::Mat JNICALL Java_com_example_bruno_seg_GalleryActivity_sobel(
                 grad.at<uchar>(i,j)=0;
         }
     }
-
-//    cv::show_image(grad,mensagem);
-    return grad;
 }
 
 
 
-JNIEXPORT cv::Mat JNICALL Java_com_example_bruno_seg_GalleryActivity_to_gray(
+JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_toGray(
         JNIEnv *env, jobject obj,
-        jlong src,std::string mensagem="To Gray"){
-    cv::Mat matDst = *((cv::Mat*)src);
-    cv::cvtColor(matDst, matDst, CV_BGR2GRAY);
-//    show_image(src,mensagem);
-    return matDst;
+        jlong src, jlong dst){
+    cv::Mat matSrc = *((cv::Mat*)src);
+//    cv::Mat matDst = *((cv::Mat*)dst);
+//    cv::cvtColor(matSrc, matDst, CV_BGRA2GRAY);
+
+
 }
+
+
 
 //JNIEXPORT jobject Java_com_example_bruno_seg_GalleryActivity_mat_to_bitmap(JNIEnv * env, Mat & src,
 //                                                                           bool needPremultiplyAlpha, jobject bitmap_config){
@@ -184,32 +201,6 @@ JNIEXPORT cv::Mat JNICALL Java_com_example_bruno_seg_GalleryActivity_to_gray(
 //
 //    //and finally you can get bitmap for android
 //    return _bitmap;
-//}
-
-//JNIEXPORT jobject JNICALL Java_com_example_bruno_seg_GalleryActivity_myfunction
-//        (JNIEnv *env, jclass ob, jobject bitmap){
-//    int ret;
-//    AndroidBitmapInfo info;
-//    void* pixels = 0;
-//
-//    if ((ret = AndroidBitmap_getInfo(env, bitmap, &info)) < 0) {
-////        __android_log_print(ANDROID_LOG_VERBOSE, APPNAME,"AndroidBitmap_getInfo() failed ! error=%d", ret);
-//        return NULL;
-//    }
-//
-//    if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888 ) {
-////        __android_log_print(ANDROID_LOG_VERBOSE, APPNAME,"Bitmap format is not RGBA_8888!");
-//
-//        return NULL;
-//    }
-//
-//    if ((ret = AndroidBitmap_lockPixels(env, bitmap, &pixels)) < 0) {
-////        __android_log_print(ANDROID_LOG_VERBOSE, APPNAME,"AndroidBitmap_lockPixels() failed ! error=%d", ret);
-//    }
-//
-//    // init our output image
-//    Mat mbgra(info.height, info.width, CV_8UC4, pixels);
-//
 //}
 
 }
