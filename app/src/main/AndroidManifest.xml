@@ -23,7 +23,9 @@
         android:label="SEG"
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:debuggable="true"
+        >
 
         <!-- main activity -->
         <activity

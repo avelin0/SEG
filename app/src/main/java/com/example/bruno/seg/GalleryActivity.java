@@ -12,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
@@ -28,7 +29,11 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.BufferedReader;
@@ -41,7 +46,7 @@ import java.nio.Buffer;
 import java.util.ArrayList;
 
 public class GalleryActivity extends AppCompatActivity {
-
+    private static final String TAG="SEG::Gallery Activity";
     public static final int IMAGE_GALLERY_REQUEST = 20;
     public ImageView imgPicture;
     public Bitmap lastBitmap;
@@ -60,15 +65,16 @@ public class GalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
-        if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0,
-                GalleryActivity.this, mOpenCVCallBack)) {
-            Log.e("TEST", "Cannot connect to OpenCV Manager");
-            System.loadLibrary("native-lib");
-        }
-//        mMat=new Mat();
+//        if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0,
+//                GalleryActivity.this, mOpenCVCallBack)) {
+//            Log.e("TEST", "Cannot connect to OpenCV Manager");
+//
+//        }
         // get a reference to the image view that holds the image that the user will see.
+
         imgPicture = (ImageView) findViewById(R.id.imgPicture);
     }
+
 
 
     public void onImageGalleryClicked(View v) {
@@ -81,12 +87,14 @@ public class GalleryActivity extends AppCompatActivity {
         startActivityForResult(photoPickerIntent, IMAGE_GALLERY_REQUEST);
     }
 
-    private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.i("GalleryActivity::OpenCV", "OpenCV loaded successfully");
+                    System.loadLibrary("native-lib");
+                    System.loadLibrary("opencv_java3");
 
                     mMat=new Mat();
                     mMatDst=new Mat();
@@ -132,78 +140,121 @@ public class GalleryActivity extends AppCompatActivity {
         }
     }
 
-
-    public static Bitmap applyReflection(Bitmap originalImage) {
-        // gap space between original and reflected
-        final int reflectionGap = 4;
-        // get image size
-        int width = originalImage.getWidth();
-        int height = originalImage.getHeight();
-
-        // this will not scale but will flip on the Y axis
-        Matrix matrix = new Matrix();
-        matrix.preScale(1, -1);
-
-        // create a Bitmap with the flip matrix applied to it.
-        // we only want the bottom half of the image
-        Bitmap reflectionImage = Bitmap.createBitmap(originalImage, 0, height/2, width, height/2, matrix, false);
-
-        // create a new bitmap with same width but taller to fit reflection
-        Bitmap bitmapWithReflection = Bitmap.createBitmap(width, (height + height/2), Bitmap.Config.RGB_565);
-
-        // create a new Canvas with the bitmap that's big enough for
-        // the image plus gap plus reflection
-        Canvas canvas = new Canvas(bitmapWithReflection);
-        // draw in the original image
-        canvas.drawBitmap(originalImage, 0, 0, null);
-        // draw in the gap
-        Paint defaultPaint = new Paint();
-        canvas.drawRect(0, height, width, height + reflectionGap, defaultPaint);
-        // draw in the reflection
-        canvas.drawBitmap(reflectionImage,0, height + reflectionGap, null);
-
-
-        // create a shader that is a linear gradient that covers the reflection
-        Paint paint = new Paint();
-        LinearGradient shader = new LinearGradient(0, originalImage.getHeight(), 0,
-                bitmapWithReflection.getHeight() + reflectionGap, 0x70ffffff, 0x00ffffff,
-                Shader.TileMode.CLAMP);
-        // set the paint to use this shader (linear gradient)
-        paint.setShader(shader);
-        // set the Transfer mode to be porter duff and destination in
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-        // draw a rectangle using the paint with our linear gradient
-        canvas.drawRect(0, height, width, bitmapWithReflection.getHeight() + reflectionGap, paint);
-
-        return bitmapWithReflection;
-    }
-
-
-    public void ClickWatersheed(View v){
-        if(lastBitmap != null ) {
-            Utils.bitmapToMat(lastBitmap, mMat);
-            Imgproc.cvtColor(mMat,mMatDst,Imgproc.COLOR_BGRA2GRAY);
-//            toGray(mMat.getNativeObjAddr(),mMat.getNativeObjAddr());
-
-//            Imgproc.bilateralFilter(mMat,mMatDst,15,80,80);
-//            Aqui Morphologic Operation
-
-
-//            Aqui Sobel
-//            Imgproc.Canny(mMatDst, mMatDst, 80, 100);
-
-//            FindFeatures(mMatDst.getNativeObjAddr(),mMat.getNativeObjAddr());
-
-            Utils.matToBitmap(mMat,lastBitmap);
-
-            imgPicture.setImageBitmap(lastBitmap);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!OpenCVLoader.initDebug()) {
+            Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
+        } else {
+            Log.d(TAG, "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
     }
 
+    public void ClickWatersheed(View v){
+//        new MyTask().execute(lastBitmap);
+
+        if(lastBitmap!= null  ) {
+            mMat=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+            mMatDst=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+            Utils.bitmapToMat(lastBitmap, mMat);
+//            I/Choreographer: Skipped 31 frames!  The application may be doing too much work on its main thread.
+//            A/libc: Fatal signal 11 (SIGSEGV), code 1, fault addr 0x0 in tid 29286 (ample.bruno.seg)
+
+//            TODO: watershed aqui
+//            watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
+
+//            Imgproc.cvtColor(mMat,mMatDst,Imgproc.COLOR_BGRA2GRAY);
+//            toGray(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
+            mMatDst=watershedJava(mMat);
+
+            Utils.matToBitmap(mMatDst,lastBitmap);
+
+//           TODO:  (setImageBitmap)Caused by: android.view.ViewRootImpl$CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views.
+            imgPicture.setImageBitmap(lastBitmap);
+        }
+
+    }
+
+    private class MyTask extends AsyncTask<Bitmap, Integer, String> {
+
+        // Runs in UI before background thread is called
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Bitmap... bitmaps) {
+            Bitmap tBitmap = bitmaps[0];
+
+            if(tBitmap!= null  ) {
+                mMat=new Mat(lastBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+                mMatDst=new Mat(lastBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+                Utils.bitmapToMat(tBitmap, mMat);
+//            (Resolvido) I/Choreographer: Skipped 31 frames!  The application may be doing too much work on its main thread.
+//            A/libc: Fatal signal 11 (SIGSEGV), code 1, fault addr 0x0 in tid 29286 (ample.bruno.seg)
+
+//            TODO: watershed aqui
+//            watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
 
 
-//    public native void toGray(long matAddrSrc,long matAddrDst);
+
+//            Imgproc.cvtColor(mMat,mMatDst,Imgproc.COLOR_BGRA2GRAY);
+//            toGray(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
+                mMatDst=watershedJava(mMat);
+
+                Utils.matToBitmap(mMatDst,tBitmap);
+
+//              TODO:  (setImageBitmap)Caused by: android.view.ViewRootImpl$CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views.
+                imgPicture.setImageBitmap(tBitmap);
+            }
+
+            return "some result";
+        }
+
+
+        // This is called from background thread but runs in UI
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            // Do things like update the progress bar
+        }
+
+        // This runs in UI when background thread finishes
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+        }
+    }
+
+    public Mat watershedJava(Mat mInput){
+        Mat threeChannel = new Mat();
+        Imgproc.cvtColor(mInput, mInput, Imgproc.COLOR_BGRA2BGR);
+        Imgproc.cvtColor(mInput, threeChannel, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.threshold(threeChannel, threeChannel, 100, 255, Imgproc.THRESH_BINARY);
+
+        Mat fg = new Mat(mInput.size(), CvType.CV_8U);
+        Imgproc.erode(threeChannel,fg,new Mat(),new Point(-1,-1),2);
+
+        Mat bg = new Mat(mInput.size(),CvType.CV_8U);
+        Imgproc.dilate(threeChannel,bg,new Mat(),new Point(-1,-1),3);
+        Imgproc.threshold(bg,bg,1, 128,Imgproc.THRESH_BINARY_INV);
+
+        Mat markers = new Mat(mInput.size(),CvType.CV_8U, new Scalar(0));
+        Core.add(fg, bg, markers);
+        markers.convertTo(markers, CvType.CV_32S);
+        Imgproc.watershed(mInput, markers);
+        markers.convertTo(markers,CvType.CV_8U);
+
+        return markers;
+    }
+
+
+    public native void toGray(long matAddrSrc,long matAddrDst);
     public native void FindFeatures(long addrGray,long addrRgba);
+    public native void watershed(long addrGray,long addrRgba);
 
 
 }
