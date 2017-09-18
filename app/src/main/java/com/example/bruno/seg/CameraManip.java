@@ -27,7 +27,7 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
     private static final int       VIEW_MODE_GRAY     = 1;
     private static final int       VIEW_MODE_BILATERALFILTER = 2;
     private static final int       VIEW_MODE_MORPHOOP = 5;
-    private static final int       VIEW_MODE_WATERSHEED = 7;
+    private static final int       VIEW_MODE_WATERSHED = 7;
     private static final int       VIEW_MODE_SOBEL = 6;
 
     private int                    mViewMode;
@@ -37,10 +37,10 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
 
     private MenuItem               mItemPreviewRGBA;
     private MenuItem               mItemPreviewGray;
-    private MenuItem mItemPreviewBilateralFilter;
-    private MenuItem mItemPreviewMorphoOp;
+    private MenuItem               mItemPreviewBilateralFilter;
+    private MenuItem               mItemPreviewMorphoOp;
     private MenuItem               mItemPreviewSobel;
-    private MenuItem               mItemPreviewWatersheed;
+    private MenuItem               mItemPreviewWatershed;
 
     private CameraBridgeViewBase   mOpenCvCameraView;
 
@@ -86,7 +86,7 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
         mItemPreviewSobel = menu.add("Sobel C++");
         mItemPreviewBilateralFilter = menu.add("Bilateral Filter C++");
         mItemPreviewMorphoOp = menu.add("Morphologic Operation C++");
-        mItemPreviewWatersheed = menu.add("Watersheed OpenCV");
+        mItemPreviewWatershed = menu.add("Watershed OpenCV");
         return true;
     }
 
@@ -159,7 +159,7 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
                 morphoOp(mGray.getNativeObjAddr(),mRgba.getNativeObjAddr());
                 break;
 
-            case VIEW_MODE_WATERSHEED:
+            case VIEW_MODE_WATERSHED:
                 mRgba=inputFrame.rgba();
                 mRgba = watershed(mRgba);
                 break;
@@ -203,8 +203,8 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
             mViewMode = VIEW_MODE_MORPHOOP;
         } else if (item == mItemPreviewSobel) {
             mViewMode = VIEW_MODE_SOBEL;
-        }else if (item == mItemPreviewWatersheed) {
-            mViewMode = VIEW_MODE_WATERSHEED;
+        }else if (item == mItemPreviewWatershed) {
+            mViewMode = VIEW_MODE_WATERSHED;
         }
 
         return true;

@@ -152,7 +152,7 @@ public class GalleryActivity extends AppCompatActivity {
         }
     }
 
-    public void ClickWatersheed(View v){
+    public void ClickWatershed(View v){
 //        new MyTask().execute(lastBitmap);
 
         if(lastBitmap!= null  ) {

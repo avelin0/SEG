@@ -82,4 +82,5 @@
     <string name="lblTakeNewPhoto">Take New Photo</string>
     <string name="lblOpenExistingImage">Open Existing Photo</string>
     <string name="title_activity_color">ColorActivity</string>
+    <string name="watershed">Watershed</string>
 </resources>

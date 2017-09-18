@@ -37,13 +37,13 @@
             android:text="LOAD" />
 
         <Button
-            android:id="@+id/btnWatersheed"
+            android:id="@+id/btnWatershed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:nestedScrollingEnabled="true"
-            android:onClick="ClickWatersheed"
-            android:text="Watersheed" />
+            android:onClick="ClickWatershed"
+            android:text="@string/watershed" />
 
     </LinearLayout>
 
