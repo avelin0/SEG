@@ -99,6 +99,7 @@ public class GalleryActivity extends AppCompatActivity {
                     mMat=new Mat();
                     mMatDst=new Mat();
                     mGray=new Mat();
+                    Bitmap bmp = null;
                 }
                 break;
                 default: {
@@ -153,32 +154,16 @@ public class GalleryActivity extends AppCompatActivity {
     }
 
     public void ClickWatershed(View v){
-//        new MyTask().execute(lastBitmap);
-
-        if(lastBitmap!= null  ) {
-            mMat=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-            mMatDst=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-            Utils.bitmapToMat(lastBitmap, mMat);
-//            I/Choreographer: Skipped 31 frames!  The application may be doing too much work on its main thread.
-//            A/libc: Fatal signal 11 (SIGSEGV), code 1, fault addr 0x0 in tid 29286 (ample.bruno.seg)
-
-//            TODO: watershed aqui
-//            watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
-
-//            Imgproc.cvtColor(mMat,mMatDst,Imgproc.COLOR_BGRA2GRAY);
-//            toGray(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
-            mMatDst=watershedJava(mMat);
-
-            Utils.matToBitmap(mMatDst,lastBitmap);
-
-//           TODO:  (setImageBitmap)Caused by: android.view.ViewRootImpl$CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views.
-            imgPicture.setImageBitmap(lastBitmap);
-        }
+        new MyTask().execute(lastBitmap);
+//        Imgproc.cvtColor(mMatDst,mMatDst,Imgproc.COLOR_GRAY2BGRA);
+//        lastBitmap=Bitmap.createBitmap(mMatDst.width(), mMatDst.height(), Bitmap.Config.ARGB_8888);
+//        Utils.matToBitmap(mMatDst,lastBitmap);
+//        imgPicture.setImageBitmap(lastBitmap);
 
     }
 
     private class MyTask extends AsyncTask<Bitmap, Integer, String> {
-
+        Bitmap myBitmap;
         // Runs in UI before background thread is called
         @Override
         protected void onPreExecute() {
@@ -190,8 +175,9 @@ public class GalleryActivity extends AppCompatActivity {
             Bitmap tBitmap = bitmaps[0];
 
             if(tBitmap!= null  ) {
-                mMat=new Mat(lastBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-                mMatDst=new Mat(lastBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+                mMat=new Mat(tBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+                mMatDst=new Mat(tBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+                myBitmap= Bitmap.createBitmap(mMatDst.cols(), mMatDst.rows(), Bitmap.Config.ARGB_8888);
                 Utils.bitmapToMat(tBitmap, mMat);
 //            (Resolvido) I/Choreographer: Skipped 31 frames!  The application may be doing too much work on its main thread.
 //            A/libc: Fatal signal 11 (SIGSEGV), code 1, fault addr 0x0 in tid 29286 (ample.bruno.seg)
@@ -199,33 +185,23 @@ public class GalleryActivity extends AppCompatActivity {
 //            TODO: watershed aqui
 //            watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
 
-
-
-//            Imgproc.cvtColor(mMat,mMatDst,Imgproc.COLOR_BGRA2GRAY);
-//            toGray(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
                 mMatDst=watershedJava(mMat);
+                Utils.matToBitmap(mMatDst,myBitmap);
 
-                Utils.matToBitmap(mMatDst,tBitmap);
-
-//              TODO:  (setImageBitmap)Caused by: android.view.ViewRootImpl$CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views.
-                imgPicture.setImageBitmap(tBitmap);
             }
 
             return "some result";
         }
 
-
-        // This is called from background thread but runs in UI
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            // Do things like update the progress bar
         }
 
-        // This runs in UI when background thread finishes
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            imgPicture.setImageBitmap(myBitmap);
         }
     }
 
