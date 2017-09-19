@@ -195,9 +195,11 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
         jlong dst
 ){
 
-    cv::Mat& img = *((cv::Mat*)scrGray);
-    cv::Mat& lab = *((cv::Mat*)dst);
+    cv::Mat& srcGray = *((cv::Mat*)scrGray);
+    cv::Mat& matDst = *((cv::Mat*)dst);
 
+
+    img=srcGray.clone();
     new_label = 0.0;
     scan_step2 = 1;
     scan_step3 = 1;
@@ -282,13 +284,15 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
     }
 
     max_pixel = 0;
+
     for (int x = 0; x < lab.rows; x++) {
         for (int y = 0; y < lab.cols; y++) {
-            if (max_pixel < lab.at<float>(x, y)) max_pixel = lab.at<float>(x, y);
+            if (max_pixel < lab.at<float>(x, y))
+                max_pixel = lab.at<float>(x, y);
         }
     }
 
-    lab.convertTo(lab, CV_8U, 255.0 / (max_pixel));
+    matDst.convertTo(lab, CV_8U, 255.0 / (max_pixel));
 //    lab=color_watershed(lab);
 //    return lab;
 }
