@@ -65,13 +65,6 @@ public class GalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
-//        if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0,
-//                GalleryActivity.this, mOpenCVCallBack)) {
-//            Log.e("TEST", "Cannot connect to OpenCV Manager");
-//
-//        }
-        // get a reference to the image view that holds the image that the user will see.
-
         imgPicture = (ImageView) findViewById(R.id.imgPicture);
     }
 
@@ -99,7 +92,6 @@ public class GalleryActivity extends AppCompatActivity {
                     mMat=new Mat();
                     mMatDst=new Mat();
                     mGray=new Mat();
-                    Bitmap bmp = null;
                 }
                 break;
                 default: {
@@ -129,7 +121,6 @@ public class GalleryActivity extends AppCompatActivity {
                     lastBitmap=Bitmap.createBitmap(image);
 
                     // show the image to the user
-
                     imgPicture.setImageBitmap(image);
 
                 } catch (FileNotFoundException e) {
@@ -175,9 +166,13 @@ public class GalleryActivity extends AppCompatActivity {
             Bitmap tBitmap = bitmaps[0];
 
             if(tBitmap!= null  ) {
+                letsSee("tBitmap",tBitmap.getHeight(),tBitmap.getWidth(),0,0,0,0);
                 mMat=new Mat(tBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+                letsSee("mMat: ",0,0,mMat.height(),mMat.width(),mMat.rows(),mMat.cols());
                 mMatDst=new Mat(tBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-                myBitmap= Bitmap.createBitmap(mMatDst.cols(), mMatDst.rows(), Bitmap.Config.ARGB_8888);
+                letsSee("mMatDst: ",0,0,mMatDst.height(),mMatDst.width(),mMatDst.rows(),mMatDst.cols());
+                myBitmap= Bitmap.createBitmap(mMatDst.cols(), mMatDst.rows(),Bitmap.Config.ARGB_8888);
+                letsSee("myBitmap",myBitmap.getHeight(),myBitmap.getWidth(),0,0,0,0);
                 Utils.bitmapToMat(tBitmap, mMat);
 //            (Resolvido) I/Choreographer: Skipped 31 frames!  The application may be doing too much work on its main thread.
 //            A/libc: Fatal signal 11 (SIGSEGV), code 1, fault addr 0x0 in tid 29286 (ample.bruno.seg)
@@ -203,6 +198,20 @@ public class GalleryActivity extends AppCompatActivity {
             super.onPostExecute(result);
             imgPicture.setImageBitmap(myBitmap);
         }
+    }
+
+    private void letsSee(String youngName,
+                    int getHeight,int getWidth,
+                    int height,int width,
+                    int rows, int cols){
+        Log.i("Lets see: ",youngName+
+                "\ngetHeight -> "+ getHeight+
+                "\ngetWidth -> "+ getWidth+
+                "\nheight -> "+ height+
+                "\nwidth -> "+ width+
+                "\nrows -> "+ rows+
+                "\ncols -> "+ cols
+        );
     }
 
     public Mat watershedJava(Mat mInput){
