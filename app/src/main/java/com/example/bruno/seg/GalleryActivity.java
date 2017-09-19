@@ -145,11 +145,22 @@ public class GalleryActivity extends AppCompatActivity {
     }
 
     public void ClickWatershed(View v){
-        new MyTask().execute(lastBitmap);
-//        Imgproc.cvtColor(mMatDst,mMatDst,Imgproc.COLOR_GRAY2BGRA);
-//        lastBitmap=Bitmap.createBitmap(mMatDst.width(), mMatDst.height(), Bitmap.Config.ARGB_8888);
-//        Utils.matToBitmap(mMatDst,lastBitmap);
-//        imgPicture.setImageBitmap(lastBitmap);
+//        new MyTask().execute(lastBitmap);
+
+        if(lastBitmap!= null  ) {
+            mMat=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+            mMatDst=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+            Bitmap myBitmap= Bitmap.createBitmap(mMatDst.cols(), mMatDst.rows(),Bitmap.Config.ARGB_8888);
+            Utils.bitmapToMat(lastBitmap, mMat);
+
+//            TODO: watershed aqui
+            watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
+//                mMatDst=watershedJava(mMat);
+
+            Utils.matToBitmap(mMatDst,myBitmap);
+            imgPicture.setImageBitmap(myBitmap);
+
+        }
 
     }
 
@@ -166,21 +177,21 @@ public class GalleryActivity extends AppCompatActivity {
             Bitmap tBitmap = bitmaps[0];
 
             if(tBitmap!= null  ) {
-                letsSee("tBitmap",tBitmap.getHeight(),tBitmap.getWidth(),0,0,0,0);
+//                letsSee("tBitmap",tBitmap.getHeight(),tBitmap.getWidth(),0,0,0,0);
                 mMat=new Mat(tBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-                letsSee("mMat: ",0,0,mMat.height(),mMat.width(),mMat.rows(),mMat.cols());
+//                letsSee("mMat: ",0,0,mMat.height(),mMat.width(),mMat.rows(),mMat.cols());
                 mMatDst=new Mat(tBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-                letsSee("mMatDst: ",0,0,mMatDst.height(),mMatDst.width(),mMatDst.rows(),mMatDst.cols());
+//                letsSee("mMatDst: ",0,0,mMatDst.height(),mMatDst.width(),mMatDst.rows(),mMatDst.cols());
                 myBitmap= Bitmap.createBitmap(mMatDst.cols(), mMatDst.rows(),Bitmap.Config.ARGB_8888);
-                letsSee("myBitmap",myBitmap.getHeight(),myBitmap.getWidth(),0,0,0,0);
+//                letsSee("myBitmap",myBitmap.getHeight(),myBitmap.getWidth(),0,0,0,0);
                 Utils.bitmapToMat(tBitmap, mMat);
 //            (Resolvido) I/Choreographer: Skipped 31 frames!  The application may be doing too much work on its main thread.
 //            A/libc: Fatal signal 11 (SIGSEGV), code 1, fault addr 0x0 in tid 29286 (ample.bruno.seg)
 
 //            TODO: watershed aqui
-//            watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
+            watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
 
-                mMatDst=watershedJava(mMat);
+//                mMatDst=watershedJava(mMat);
                 Utils.matToBitmap(mMatDst,myBitmap);
 
             }
