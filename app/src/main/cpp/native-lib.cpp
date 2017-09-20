@@ -31,6 +31,27 @@ int scan_step2 = 1;
 int scan_step3 = 1;
 int windowSize = 1;
 
+void printInt(string ident,int number){
+    stringstream strst;
+    strst<<number;
+    __android_log_print(ANDROID_LOG_VERBOSE, ident.c_str(), strst.str().c_str(), 1);
+}
+
+void printMat(Mat mat, string str){
+    stringstream mss;
+    mss<<"Linhas: "<<mat.rows<< " Colunas: "<<mat.cols<<" Canais: "<<mat.channels()<<" Type: "<<mat.type();
+    __android_log_print(ANDROID_LOG_INFO, str.c_str(), mss.str().c_str(), 1);
+
+    for (int i = 0; i < 5; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            stringstream ss;
+            ss<<"("<<i<<","<<j<<") = "<< mat.at<float>(i,j);
+            __android_log_print(ANDROID_LOG_INFO, str.c_str(), ss.str().c_str(), 1);
+        }
+
+    }
+}
+
 /*! \brief Compare Float
  *
  *  Compara variaveis nao inteiras
@@ -211,8 +232,12 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
     LMAX = 100000000000;
 
     //inicializar o tamanho da matriz
-    lab = img.clone();
-    val = img.clone();
+    lab = Mat::zeros(img.cols,img.rows,CV_32FC3);
+    val = Mat::zeros(img.cols,img.rows,CV_32FC3);
+
+
+
+
 
     //inicializar os valores
     for (int x = 0; x < img.rows; x++) {
@@ -221,6 +246,8 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
             val.at<float>(x, y) = INIT;
         }
     }
+
+
     //encontra menor pixel de cada vizinhanca
     for (int x = 0; x < img.rows; x++) {
         for (int y = 0; y < img.cols; y++) {
@@ -252,7 +279,6 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
             }
         }
     }
-
     int limite = 0;
 
     while (scan_step3 == 1) {
@@ -290,14 +316,20 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
                 max_pixel = lab.at<float>(x, y);
         }
     }
-
-    lab.convertTo(lab, CV_8U, 255.0 / (max_pixel));
-
+    printInt("Max_Pixel",max_pixel);
+    printMat(img,"img");
+    printMat(lab,"lab");
+    printMat(val,"val");
+    lab.convertTo(lab, CV_8U, (int) (255.0)/max_pixel);
+    printMat(img,"img");
+    printMat(lab,"lab");
+    printMat(val,"val");
     for (int i = 0; i < matDst.rows; ++i) {
         for (int j = 0; j < matDst.cols; ++j) {
-                matDst.at<uchar>(i,j)=lab.at<uchar>(i,j);
+                matDst.at<float>(i,j)=lab.at<float>(i,j);
         }
     }
+
 
 //    lab=color_watershed(lab);
 }
@@ -351,9 +383,9 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_FindFeatures(JNIEn
 }
 
 
-void printNative(){
-    __android_log_print(ANDROID_LOG_VERBOSE, "Native-Lib", "teste", 1);
-}
+
+
+
 
 void JNICALL Java_com_example_bruno_seg_CameraManip_salt(JNIEnv *env, jobject instance,
                                                          jlong matAddrGray,
@@ -366,8 +398,6 @@ void JNICALL Java_com_example_bruno_seg_CameraManip_salt(JNIEnv *env, jobject in
         int i=rand() % nCols;
         int j=rand() % nRows;
         mGr.at<uchar>(j,i)=255;
-//        printf("Linhas: %d , Colunas: %d",i,j);
-        printNative();
 
     }
 }
