@@ -29,6 +29,7 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
     private static final int       VIEW_MODE_MORPHOOP = 5;
     private static final int       VIEW_MODE_WATERSHED = 7;
     private static final int       VIEW_MODE_SOBEL = 6;
+    private static final int       VIEW_MODE_SIFT = 9;
 
     private int                    mViewMode;
     private Mat                    mRgba;
@@ -41,6 +42,7 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
     private MenuItem               mItemPreviewMorphoOp;
     private MenuItem               mItemPreviewSobel;
     private MenuItem               mItemPreviewWatershed;
+    private MenuItem               mItemPreviewSift;
 
     private CameraBridgeViewBase   mOpenCvCameraView;
 
@@ -86,6 +88,7 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
         mItemPreviewSobel = menu.add("Sobel C++");
         mItemPreviewBilateralFilter = menu.add("Bilateral Filter C++");
         mItemPreviewMorphoOp = menu.add("Morphologic Operation C++");
+        mItemPreviewSift = menu.add("Sift C++");
         mItemPreviewWatershed = menu.add("Watershed OpenCV");
         return true;
     }
@@ -163,6 +166,9 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
                 mRgba=inputFrame.rgba();
                 mRgba = watershed(mRgba);
                 break;
+            case VIEW_MODE_SIFT:
+                FindFeatures(inputFrame.rgba().getNativeObjAddr(),mRgba.getNativeObjAddr());
+                break;
         }
 
         return mRgba;
@@ -205,8 +211,9 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
             mViewMode = VIEW_MODE_SOBEL;
         }else if (item == mItemPreviewWatershed) {
             mViewMode = VIEW_MODE_WATERSHED;
+        } else if (item == mItemPreviewSift) {
+            mViewMode = VIEW_MODE_SIFT;
         }
-
         return true;
     }
 
@@ -218,11 +225,10 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
     public native void toGray(long matSrc, long matDst);
     public native void sobel(long matAddrSrc,long matAddrDst);
     public native void morphoOp(long matSrc, long matDst);
-    public native void watershed(long matAddrSrc,long matAddrDst);
+    public native void FindFeatures(long addrGray,long addrRgba);
 
     public native void salt(long matAddrSrc, int nbrElem,int mRows, int mCols);
     public native void thresh(long matAddrRgba,long matDst);
-    public native void FindFeatures(long matAddrSrc, long matAddrDst);
 
 
 }

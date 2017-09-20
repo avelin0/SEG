@@ -188,7 +188,6 @@ void step3(int x, int y) {
  * \param string Identifica a imagem na janela
  * \return Mat
  */
-//Mat Watershed(Mat imagem, int winSize=1,string mensagem="Watersheed") {
 JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
         JNIEnv *env, jobject obj,
         jlong scrGray,
@@ -292,130 +291,15 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
         }
     }
 
-    matDst.convertTo(lab, CV_8U, 255.0 / (max_pixel));
-//    lab=color_watershed(lab);
-//    return lab;
-}
-
-
-/*! \brief Watersheed
- *
- *  Realiza a segmentação da imagem pelo algoritmo watersheed na variação rainfall
- *
- * \param Mat imagem em formato da matriz a ser manipulada
- * \param int comprimento da janela, valor default = 1
- * \param string Identifica a imagem na janela
- * \return Mat
- */
-JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_watershed(
-        JNIEnv *env, jobject obj,
-        jlong scrGray,
-        jlong dst
-){
-
-    cv::Mat& img = *((cv::Mat*)scrGray);
-    cv::Mat& lab = *((cv::Mat*)dst);
-//Mat Watershed(Mat imagem)
-
-    int winSize=1;
-    new_label = 0.0;
-    scan_step2 = 1;
-    scan_step3 = 1;
-    windowSize = winSize;
-//    img = imagem;
-
-    img.convertTo(img, CV_32FC3);
-
-    VMAX = 100000000000;
-    LMAX = 100000000000;
-
-    //inicializar o tamanho da matriz
-    lab = img.clone();
-    val = img.clone();
-    //inicializar os valores
-    for (int x = 0; x < img.rows; x++) {
-        for (int y = 0; y < img.cols; y++) {
-            lab.at<float>(x, y) = INIT;
-            val.at<float>(x, y) = INIT;
-        }
-    }
-    //encontra menor pixel de cada vizinhanca
-    for (int x = 0; x < img.rows; x++) {
-        for (int y = 0; y < img.cols; y++) {
-            step1(x, y);
-        }
-    }
-
-
-
-    //encontrar os plateaus mesmo pixel greyscale a partir dos minimos
-    while (scan_step2 == 1) {
-        changed = 0;
-        //scan top left >> bottom right
-        for (int x = 0; x < img.rows; x++) {
-            for (int y = 0; y < img.cols; y++) {
-                step2(x, y);
-            }
-        }
-        if (changed == 0) {
-            scan_step2 = 0;
-        } else {
-            changed = 0;
-            //scan bottom right >> top left
-            for (int x = img.rows - 1; x >= 0; x--) {
-                for (int y = img.cols - 1; y >= 0; y--) {
-                    step2(x, y);
-                }
-            }
-            if (changed == 0) {
-                scan_step2 = 0;
-            }
-        }
-    }
-    __android_log_print(ANDROID_LOG_INFO, "Native-Lib", "Aqui 1", 1);
-    int limite = 0;
-    while (scan_step3 == 1) {
-        limite++;
-        if (limite == 10) break;
-        changed = 0;
-        //scan top left >> bottom right
-        for (int x = 0; x < img.rows; x++) {
-//            TODO: aqui da crash
-            for (int y = 0; y < img.cols; y++) {
-                step3(x, y);
-            }
-        }
-
-        if (changed == 0) {
-            scan_step3 = 0;
-        } else {
-            changed = 0;
-            //scan bottom right >> top left
-            for (int x = img.rows - 1; x >= 0; x--) {
-                for (int y = img.cols - 1; y >= 0; y--) {
-                    step3(x, y);
-                }
-            }
-            if (changed == 0) {
-                scan_step3 = 0;
-            }
-        }
-    }
-
-
-    max_pixel = 0;
-    for (int x = 0; x < lab.rows; x++) {
-        for (int y = 0; y < lab.cols; y++) {
-            if (max_pixel < lab.at<float>(x, y)) max_pixel = lab.at<float>(x, y);
-        }
-    }
-
     lab.convertTo(lab, CV_8U, 255.0 / (max_pixel));
-//    lab=color_watershed(lab);
 
-//    TODO: problema? sera??
-//    matDst=lab;
-//    return lab;
+    for (int i = 0; i < matDst.rows; ++i) {
+        for (int j = 0; j < matDst.cols; ++j) {
+                matDst.at<uchar>(i,j)=lab.at<uchar>(i,j);
+        }
+    }
+
+//    lab=color_watershed(lab);
 }
 
 
@@ -466,27 +350,11 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_FindFeatures(JNIEn
     }
 }
 
-JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_FindFeatures(JNIEnv*, jobject,
-                                                                           jlong addrGray,
-                                                                           jlong addrRgba) {
-    cv::Mat& mGr  = *(cv::Mat*)addrGray;
-    cv::Mat& mRgb = *(cv::Mat*)addrRgba;
-    std::vector<cv::KeyPoint> v;
-
-    cv::Ptr<cv::FeatureDetector> detector = cv::FastFeatureDetector::create(50);
-    detector->detect(mGr, v);
-    for( unsigned int i = 0; i < v.size(); i++ ) {
-        const cv::KeyPoint& kp = v[i];
-        cv::circle(mRgb, cv::Point(kp.pt.x, kp.pt.y), 10, cv::Scalar(255,0,0,255));
-    }
-}
-
 
 void printNative(){
     __android_log_print(ANDROID_LOG_VERBOSE, "Native-Lib", "teste", 1);
 }
 
-//TODO: nr Colunas e Linhas nao e o mesmo
 void JNICALL Java_com_example_bruno_seg_CameraManip_salt(JNIEnv *env, jobject instance,
                                                          jlong matAddrGray,
                                                          jint nbrElem,
@@ -514,14 +382,6 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_toGray(JNIEnv *env
 
 }
 
-JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_toGray(JNIEnv *env, jobject obj,
-                                                                     jlong src, jlong dst){
-    cv::Mat &matSrc = *((cv::Mat*)src);
-    cv::Mat &matDst = *((cv::Mat*)dst);
-    cv::cvtColor(matSrc, matDst, CV_BGRA2GRAY);
-
-
-}
 
 JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_bilateralFilter(JNIEnv *env, jobject obj,
                                                                     jlong src, jlong dst){
@@ -531,7 +391,6 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_bilateralFilter(JN
 
 }
 
-//TODO: analisar melhos os parametros, but it is working. Obs: implementacao aqui esta diferente da do C++
 JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_morphoOp(JNIEnv *env, jobject obj,
                                                                         jlong addrSrc, jlong addrDst){
     cv::Mat& mSrc  = *(cv::Mat*)addrSrc;
