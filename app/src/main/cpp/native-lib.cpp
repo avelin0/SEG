@@ -31,6 +31,7 @@ int scan_step2 = 1;
 int scan_step3 = 1;
 int windowSize = 1;
 
+
 void printInt(string ident,int number){
     stringstream strst;
     strst<<number;
@@ -50,6 +51,66 @@ void printMat(Mat mat, string str){
         }
 
     }
+}
+
+Mat color_watershed(Mat color) {
+    // Gera cores aleatorias
+    vector<Vec3b> colors;
+    for (size_t i = 0; i < 255; i++) {
+        int b = theRNG().uniform(10, 255);
+        int g = theRNG().uniform(10, 255);
+        int r = theRNG().uniform(10, 255);
+        colors.push_back(Vec3b((uchar) b, (uchar) g, (uchar) r));
+    }
+    // Cria imagem final
+    Mat dst = Mat::zeros(color.size(), CV_8UC3);
+
+    // Pinta cada area de uma cor
+    for (int i = 0; i < color.rows; i++) {
+        for (int j = 0; j < color.cols; j++) {
+
+            color.convertTo(color, CV_32F);
+            int index = color.at<int>(i, j) % (int) 255;
+            if (index > 0 && index <= 255) {
+                dst.at<Vec3b>(i, j) = colors[index - 1];
+            } else
+                dst.at<Vec3b>(i, j) = Vec3b(0, 0, 0);
+        }
+    }
+    printMat(dst,"destino");
+    return dst;
+}
+
+Mat morpho_op(Mat src,int morph_elem = 0,int morph_size = 1,int morph_operator = 1,string mensagem="Morpho OP"){
+    Mat dst;
+    int operation = morph_operator + 2;// Since MORPH_X : 2,3,4,5 and 6
+    Mat element = getStructuringElement( morph_elem, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
+
+    /// Apply the specified morphology operation
+    morphologyEx( src, dst, operation, element );
+    return dst;
+}
+
+Mat sobel(Mat src_gray,int scale = 1,int delta = 0,int ddepth = CV_16S,string mensagem="Sobel Image"){
+    Mat grad;
+    Mat grad_x, grad_y;
+    Mat abs_grad_x, abs_grad_y;
+
+    Sobel( src_gray, grad_x, ddepth, 1, 0, 3, scale, delta, BORDER_DEFAULT );
+    convertScaleAbs( grad_x, abs_grad_x );
+
+    Sobel( src_gray, grad_y, ddepth, 0, 1, 3, scale, delta, BORDER_DEFAULT );
+    convertScaleAbs( grad_y, abs_grad_y );
+
+    addWeighted( abs_grad_x, 1., abs_grad_y, 1., 0, grad );
+    for (int i = 0; i < grad.rows; ++i) {
+        for (int j = 0; j < grad.cols; ++j) {
+            if (grad.at<uchar>(i,j) < MB_THRESHOLD)
+                grad.at<uchar>(i,j)=0;
+        }
+    }
+
+    return grad;
 }
 
 /*! \brief Compare Float
@@ -220,6 +281,17 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
 
 
     img=srcGray.clone();
+//    Mat bl;
+//    bilateralFilter ( img, bl, 15, 80, 80 );
+//    img=bl.clone();
+
+
+    img=sobel(img);
+    img=morpho_op(img);
+
+
+
+
     new_label = 0.0;
     scan_step2 = 1;
     scan_step3 = 1;
@@ -316,24 +388,24 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
                 max_pixel = lab.at<float>(x, y);
         }
     }
-    printInt("Max_Pixel",max_pixel);
-    printMat(img,"img");
-    printMat(lab,"lab");
-    printMat(val,"val");
-    lab.convertTo(lab, CV_8U, (int) (255.0)/max_pixel);
-    printMat(img,"img");
-    printMat(lab,"lab");
-    printMat(val,"val");
-    for (int i = 0; i < matDst.rows; ++i) {
-        for (int j = 0; j < matDst.cols; ++j) {
-                matDst.at<float>(i,j)=lab.at<float>(i,j);
-        }
-    }
-
+//    printInt("Max_Pixel",max_pixel);
+//    printMat(img,"img");
+//    printMat(lab,"lab");
+//    printMat(val,"val");
+    lab.convertTo(lab, CV_8U, (255.0)/max_pixel);
+//    printMat(img,"img");
+//    printMat(lab,"lab");
+//    printMat(val,"val");
+//    for (int i = 0; i < matDst.rows; ++i) {
+//        for (int j = 0; j < matDst.cols; ++j) {
+//                matDst.at<int>(i,j)=(int)img.at<float>(i,j);
+//        }
+//    }
+    lab=color_watershed(lab);
+    matDst=lab.clone();
 
 //    lab=color_watershed(lab);
 }
-
 
 
 JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_sobel(

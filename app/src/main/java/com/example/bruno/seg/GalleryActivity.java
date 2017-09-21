@@ -49,7 +49,7 @@ public class GalleryActivity extends AppCompatActivity {
     private static final String TAG="SEG::Gallery Activity";
     public static final int IMAGE_GALLERY_REQUEST = 20;
     public ImageView imgPicture;
-    public Bitmap lastBitmap;
+    public static Bitmap lastBitmap;
     public Mat mMat;
     public Mat mMatDst;
     public Mat mGray;
@@ -67,8 +67,6 @@ public class GalleryActivity extends AppCompatActivity {
 
         imgPicture = (ImageView) findViewById(R.id.imgPicture);
     }
-
-
 
     public void onImageGalleryClicked(View v) {
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
@@ -145,20 +143,44 @@ public class GalleryActivity extends AppCompatActivity {
     }
 
     public void ClickWatershed(View v){
-//        new MyTask().execute(lastBitmap);
+//        new MyTask().execute("lastBitmap");
 
         if(lastBitmap!= null  ) {
-            mMat=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-            mMatDst=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-            Bitmap myBitmap= Bitmap.createBitmap(mMatDst.cols(), mMatDst.rows(),Bitmap.Config.ARGB_8888);
-            Utils.bitmapToMat(lastBitmap, mMat);
+            mMat=new Mat();
+            mMatDst=new Mat();
 
-//            TODO: watershed aqui
+//            Bitmap myBitmap= Bitmap.createBitmap(mMatDst.cols(), mMatDst.rows(),Bitmap.Config.ARGB_8888);
+
+            Log.i("Click Watershed",lastBitmap.getConfig().name());
+
+            Utils.bitmapToMat(lastBitmap, mMat);
+            Imgproc.cvtColor(mMat,mMat,Imgproc.COLOR_RGBA2GRAY);
+
+
+
+
+//            Imgproc.cvtColor(mMatDst, mMatDst, Imgproc.COLOR_BGRA2GRAY);//errado
             watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
 //                mMatDst=watershedJava(mMat);
 
-            Utils.matToBitmap(mMatDst,myBitmap);
-            imgPicture.setImageBitmap(myBitmap);
+            Log.i("Matst","Lets see: mMatDst"+
+                    "\nchannels -> "+ String.valueOf(mMatDst.channels())+
+                    "\ntype -> "+ String.valueOf(mMatDst.type())+
+                    "\nrows -> "+ String.valueOf(mMatDst.rows())+
+                    "\ncols -> "+ String.valueOf(mMatDst.cols())
+            );
+
+            Utils.matToBitmap(mMatDst,lastBitmap);
+
+            Log.i("lastBitmap","Lets see lastBitmap"+
+                    "\ngetHeight -> "+ String.valueOf(lastBitmap.getHeight())+
+                    "\ngetWidth -> "+ String.valueOf(lastBitmap.getWidth())+
+                    "\nconfig -> "+ String.valueOf(lastBitmap.getConfig())
+            );
+
+
+
+            imgPicture.setImageBitmap(lastBitmap);
 
         }
 
@@ -200,8 +222,7 @@ public class GalleryActivity extends AppCompatActivity {
         );
     }
 
-    private class MyTask extends AsyncTask<Bitmap, Integer, String> {
-        Bitmap myBitmap;
+    private class MyTask extends AsyncTask<String, Integer, String> {
         // Runs in UI before background thread is called
         @Override
         protected void onPreExecute() {
@@ -209,30 +230,23 @@ public class GalleryActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(Bitmap... bitmaps) {
-            Bitmap tBitmap = bitmaps[0];
+        protected String doInBackground(String... strings) {
+            String str = strings[0];
 
-            if(tBitmap!= null  ) {
-//                letsSee("tBitmap",tBitmap.getHeight(),tBitmap.getWidth(),0,0,0,0);
-                mMat=new Mat(tBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-//                letsSee("mMat: ",0,0,mMat.height(),mMat.width(),mMat.rows(),mMat.cols());
-                mMatDst=new Mat(tBitmap.getHeight(), tBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-//                letsSee("mMatDst: ",0,0,mMatDst.height(),mMatDst.width(),mMatDst.rows(),mMatDst.cols());
-                myBitmap= Bitmap.createBitmap(mMatDst.cols(), mMatDst.rows(),Bitmap.Config.ARGB_8888);
-//                letsSee("myBitmap",myBitmap.getHeight(),myBitmap.getWidth(),0,0,0,0);
-                Utils.bitmapToMat(tBitmap, mMat);
-//            (Resolvido) I/Choreographer: Skipped 31 frames!  The application may be doing too much work on its main thread.
-//            A/libc: Fatal signal 11 (SIGSEGV), code 1, fault addr 0x0 in tid 29286 (ample.bruno.seg)
+            if(lastBitmap!= null  ) {
+                mMat=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+                mMatDst=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+                Utils.bitmapToMat(lastBitmap, mMat);
 
 //            TODO: watershed aqui
                 watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
-
 //                mMatDst=watershedJava(mMat);
-                Utils.matToBitmap(mMatDst,myBitmap);
+
+                Utils.matToBitmap(mMatDst,lastBitmap);
 
             }
 
-            return "some result";
+            return str;
         }
 
         @Override
@@ -243,7 +257,7 @@ public class GalleryActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            imgPicture.setImageBitmap(myBitmap);
+            imgPicture.setImageBitmap(lastBitmap);
         }
     }
 

@@ -48,6 +48,7 @@
         <activity
             android:name=".GalleryActivity"
             android:label="@string/title_activity_gallery"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
