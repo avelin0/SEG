@@ -149,11 +149,23 @@ public class GalleryActivity extends AppCompatActivity {
             mMat=new Mat();
             mMatDst=new Mat();
 
-//            Bitmap myBitmap= Bitmap.createBitmap(mMatDst.cols(), mMatDst.rows(),Bitmap.Config.ARGB_8888);
 
             Log.i("Click Watershed",lastBitmap.getConfig().name());
+            Log.i("BitmapToMat(Antes)","Lets see lastBitmap"+
+                    "\ngetHeight -> "+ String.valueOf(lastBitmap.getHeight())+
+                    "\ngetWidth -> "+ String.valueOf(lastBitmap.getWidth())+
+                    "\nconfig -> "+ String.valueOf(lastBitmap.getConfig())
+            );
 
             Utils.bitmapToMat(lastBitmap, mMat);
+
+            Log.i("BitmapToMat(antes)","Lets see: mMatDst"+
+                    "\nchannels -> "+ String.valueOf(mMatDst.channels())+
+                    "\ntype -> "+ String.valueOf(mMatDst.type())+
+                    "\nrows -> "+ String.valueOf(mMatDst.rows())+
+                    "\ncols -> "+ String.valueOf(mMatDst.cols())
+            );
+
             Imgproc.cvtColor(mMat,mMat,Imgproc.COLOR_RGBA2GRAY);
 
 
@@ -163,22 +175,41 @@ public class GalleryActivity extends AppCompatActivity {
             watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
 //                mMatDst=watershedJava(mMat);
 
-            Log.i("Matst","Lets see: mMatDst"+
+
+            Log.i("MatToBitmap(Depois)","Lets see: mMatDst"+
                     "\nchannels -> "+ String.valueOf(mMatDst.channels())+
                     "\ntype -> "+ String.valueOf(mMatDst.type())+
                     "\nrows -> "+ String.valueOf(mMatDst.rows())+
                     "\ncols -> "+ String.valueOf(mMatDst.cols())
             );
-
             Utils.matToBitmap(mMatDst,lastBitmap);
-
-            Log.i("lastBitmap","Lets see lastBitmap"+
+            Log.i("MatToBitmap(Depois)","Lets see lastBitmap"+
                     "\ngetHeight -> "+ String.valueOf(lastBitmap.getHeight())+
                     "\ngetWidth -> "+ String.valueOf(lastBitmap.getWidth())+
                     "\nconfig -> "+ String.valueOf(lastBitmap.getConfig())
             );
 
 
+
+
+
+            imgPicture.setImageBitmap(lastBitmap);
+
+        }
+
+    }
+
+    public void ClickWatershedJava(View v){
+
+        if(lastBitmap!= null  ) {
+            mMat=new Mat();
+            mMatDst=new Mat();
+
+            Utils.bitmapToMat(lastBitmap, mMat);
+
+            mMatDst=watershedJava(mMat);
+
+            Utils.matToBitmap(mMatDst,lastBitmap);
 
             imgPicture.setImageBitmap(lastBitmap);
 

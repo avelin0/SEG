@@ -43,7 +43,17 @@
             android:layout_weight="1"
             android:nestedScrollingEnabled="true"
             android:onClick="ClickWatershed"
-            android:text="@string/watershed" />
+            android:text= "@string/watershed" />
+
+        <Button
+            android:id="@+id/btnWatershedOpenCvJava"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:nestedScrollingEnabled="true"
+            android:onClick="ClickWatershedJava"
+            android:text="@string/watershedjava" />
+
 
     </LinearLayout>
 
