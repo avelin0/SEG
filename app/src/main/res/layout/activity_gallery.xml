@@ -12,14 +12,14 @@
     android:weightSum="1">
 
 
+
+
     <ImageView
         android:id="@+id/imgPicture"
         android:layout_width="match_parent"
-        android:layout_height="498dp"
+        android:layout_height="370dp"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.14"
-        android:src="@drawable/ic_launcher"
-        />
+        android:src="@drawable/ic_launcher" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -38,9 +38,8 @@
 
         <Button
             android:id="@+id/btnWatershed"
-            android:layout_width="wrap_content"
+            android:layout_width="147dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:nestedScrollingEnabled="true"
             android:onClick="ClickWatershed"
             android:text="@string/watershed" />
@@ -49,11 +48,40 @@
             android:id="@+id/btnWatershed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:nestedScrollingEnabled="true"
             android:onClick="ClickWatershedJava"
             android:text="@string/watershedJava" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ajuste Sobel" />
+
+    <SeekBar
+        android:id="@+id/seekBarSobel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="2dp"
+        android:layout_weight="0.03" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ajuste Filtro Bilateral" />
+
+    <SeekBar
+        android:id="@+id/seekBarBilateral"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="2dp"
+        android:layout_weight="0.04" />
 
 </LinearLayout>

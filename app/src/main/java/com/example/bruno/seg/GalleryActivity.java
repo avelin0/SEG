@@ -23,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -48,6 +49,8 @@ import java.util.ArrayList;
 public class GalleryActivity extends AppCompatActivity {
     private static final String TAG="SEG::Gallery Activity";
     public static final int IMAGE_GALLERY_REQUEST = 20;
+    private SeekBar volumeControl = null;
+    private SeekBar volumeControl2 = null;
     public ImageView imgPicture;
     public static Bitmap lastBitmap;
     public Mat mMat;
@@ -65,7 +68,43 @@ public class GalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
+        volumeControl = (SeekBar) findViewById(R.id.seekBarSobel);
+        volumeControl2 = (SeekBar) findViewById(R.id.seekBarBilateral);
         imgPicture = (ImageView) findViewById(R.id.imgPicture);
+
+        volumeControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progressChanged = 0;
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+                progressChanged = progress;
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Toast.makeText(GalleryActivity.this,"Sobel seek bar progress:"+progressChanged,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        volumeControl2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progressChanged = 0;
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+                progressChanged = progress;
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Toast.makeText(GalleryActivity.this,"Bilateral seek bar progress:"+progressChanged,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void onImageGalleryClicked(View v) {
@@ -142,6 +181,7 @@ public class GalleryActivity extends AppCompatActivity {
         }
     }
 
+//    TODO: linhas / coluna
     public void ClickWatershed(View v){
 //        new MyTask().execute("lastBitmap");
 
@@ -149,22 +189,22 @@ public class GalleryActivity extends AppCompatActivity {
             mMat=new Mat();
             mMatDst=new Mat();
 
-
-            Log.i("Click Watershed",lastBitmap.getConfig().name());
-            Log.i("BitmapToMat(Antes)","Lets see lastBitmap"+
-                    "\ngetHeight -> "+ String.valueOf(lastBitmap.getHeight())+
-                    "\ngetWidth -> "+ String.valueOf(lastBitmap.getWidth())+
-                    "\nconfig -> "+ String.valueOf(lastBitmap.getConfig())
-            );
+//
+//            Log.i("Click Watershed",lastBitmap.getConfig().name());
+//            Log.i("BitmapToMat(Antes)","Lets see lastBitmap"+
+//                    "\ngetHeight -> "+ String.valueOf(lastBitmap.getHeight())+
+//                    "\ngetWidth -> "+ String.valueOf(lastBitmap.getWidth())+
+//                    "\nconfig -> "+ String.valueOf(lastBitmap.getConfig())
+//            );
 
             Utils.bitmapToMat(lastBitmap, mMat);
 
-            Log.i("BitmapToMat(antes)","Lets see: mMatDst"+
-                    "\nchannels -> "+ String.valueOf(mMatDst.channels())+
-                    "\ntype -> "+ String.valueOf(mMatDst.type())+
-                    "\nrows -> "+ String.valueOf(mMatDst.rows())+
-                    "\ncols -> "+ String.valueOf(mMatDst.cols())
-            );
+//            Log.i("BitmapToMat(antes)","Lets see: mMatDst"+
+//                    "\nchannels -> "+ String.valueOf(mMatDst.channels())+
+//                    "\ntype -> "+ String.valueOf(mMatDst.type())+
+//                    "\nrows -> "+ String.valueOf(mMatDst.rows())+
+//                    "\ncols -> "+ String.valueOf(mMatDst.cols())
+//            );
 
             Imgproc.cvtColor(mMat,mMat,Imgproc.COLOR_RGBA2GRAY);
 
