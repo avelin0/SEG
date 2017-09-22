@@ -9,7 +9,7 @@
 
 extern "C"{
 
-#define MB_THRESHOLD 20
+
 
 using namespace std;
 using namespace cv;
@@ -19,6 +19,8 @@ Mat val;
 Mat img;
 int show=0;
 int save=0;
+
+int MB_THRESHOLD = 20;
 
 //Watersheed
 const float INIT = 0.0;
@@ -30,7 +32,6 @@ int changed = 0;
 int scan_step2 = 1;
 int scan_step3 = 1;
 int windowSize = 1;
-
 
 void printInt(string ident,int number){
     stringstream strst;
@@ -91,10 +92,12 @@ Mat morpho_op(Mat src,int morph_elem = 0,int morph_size = 1,int morph_operator =
     return dst;
 }
 
-Mat sobel(Mat src_gray,int scale = 1,int delta = 0,int ddepth = CV_16S,string mensagem="Sobel Image"){
+Mat sobel(Mat src_gray,int sobelThreshold,int scale = 1,int delta = 0,int ddepth = CV_16S,string mensagem="Sobel Image"){
     Mat grad;
     Mat grad_x, grad_y;
     Mat abs_grad_x, abs_grad_y;
+    if( sobelThreshold > 0)
+        MB_THRESHOLD=sobelThreshold;
 
     Sobel( src_gray, grad_x, ddepth, 1, 0, 3, scale, delta, BORDER_DEFAULT );
     convertScaleAbs( grad_x, abs_grad_x );
@@ -273,7 +276,9 @@ void step3(int x, int y) {
 JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
         JNIEnv *env, jobject obj,
         jlong scrGray,
-        jlong dst
+        jlong dst,
+        jint sobelThreshold,
+        jint bilateralSigmaColorSpace
 ){
 
     cv::Mat& srcGray = *((cv::Mat*)scrGray);
@@ -281,13 +286,15 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
 
 
     img=srcGray.clone();
-//    Mat bl;
-//    bilateralFilter ( img, bl, 15, 80, 80 );
-//    img=bl.clone();
+    Mat bl;
+
+    bilateralFilter ( img, bl, 15, bilateralSigmaColorSpace, bilateralSigmaColorSpace);
+    img=bl.clone();
 
 
-    img=sobel(img);
+    img=sobel(img,sobelThreshold);
     img=morpho_op(img);
+
 
 
 
@@ -306,10 +313,6 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
     //inicializar o tamanho da matriz
     lab = Mat::zeros(img.cols,img.rows,CV_32FC3);
     val = Mat::zeros(img.cols,img.rows,CV_32FC3);
-
-
-
-
 
     //inicializar os valores
     for (int x = 0; x < img.rows; x++) {
@@ -388,23 +391,12 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
                 max_pixel = lab.at<float>(x, y);
         }
     }
-//    printInt("Max_Pixel",max_pixel);
-//    printMat(img,"img");
-//    printMat(lab,"lab");
-//    printMat(val,"val");
+
     lab.convertTo(lab, CV_8U, (255.0)/max_pixel);
-//    printMat(img,"img");
-//    printMat(lab,"lab");
-//    printMat(val,"val");
-//    for (int i = 0; i < matDst.rows; ++i) {
-//        for (int j = 0; j < matDst.cols; ++j) {
-//                matDst.at<int>(i,j)=(int)img.at<float>(i,j);
-//        }
-//    }
+
     lab=color_watershed(lab);
     matDst=lab.clone();
 
-//    lab=color_watershed(lab);
 }
 
 

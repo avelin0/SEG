@@ -3,23 +3,11 @@ package com.example.bruno.seg;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Shader;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,20 +25,17 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.Buffer;
-import java.util.ArrayList;
 
 public class GalleryActivity extends AppCompatActivity {
     private static final String TAG="SEG::Gallery Activity";
     public static final int IMAGE_GALLERY_REQUEST = 20;
-    private SeekBar volumeControl = null;
-    private SeekBar volumeControl2 = null;
+    private SeekBar seekBarSobel = null;
+    private SeekBar seekBarBilateral = null;
+    int progressChanged = 20;
+    int progressChangedBilateral = 80;
     public ImageView imgPicture;
     public static Bitmap lastBitmap;
     public Mat mMat;
@@ -68,12 +53,11 @@ public class GalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
-        volumeControl = (SeekBar) findViewById(R.id.seekBarSobel);
-        volumeControl2 = (SeekBar) findViewById(R.id.seekBarBilateral);
+        seekBarSobel = (SeekBar) findViewById(R.id.seekBarSobel);
+        seekBarBilateral = (SeekBar) findViewById(R.id.seekBarBilateral);
         imgPicture = (ImageView) findViewById(R.id.imgPicture);
 
-        volumeControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            int progressChanged = 0;
+        seekBarSobel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
                 progressChanged = progress;
@@ -89,11 +73,10 @@ public class GalleryActivity extends AppCompatActivity {
             }
         });
 
-        volumeControl2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            int progressChanged = 0;
+        seekBarBilateral.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
-                progressChanged = progress;
+                progressChangedBilateral = progress;
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -101,7 +84,7 @@ public class GalleryActivity extends AppCompatActivity {
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Toast.makeText(GalleryActivity.this,"Bilateral seek bar progress:"+progressChanged,
+                Toast.makeText(GalleryActivity.this,"Bilateral seek bar progress:"+ progressChangedBilateral,
                         Toast.LENGTH_SHORT).show();
             }
         });
@@ -189,49 +172,12 @@ public class GalleryActivity extends AppCompatActivity {
             mMat=new Mat();
             mMatDst=new Mat();
 
-//
-//            Log.i("Click Watershed",lastBitmap.getConfig().name());
-//            Log.i("BitmapToMat(Antes)","Lets see lastBitmap"+
-//                    "\ngetHeight -> "+ String.valueOf(lastBitmap.getHeight())+
-//                    "\ngetWidth -> "+ String.valueOf(lastBitmap.getWidth())+
-//                    "\nconfig -> "+ String.valueOf(lastBitmap.getConfig())
-//            );
-
             Utils.bitmapToMat(lastBitmap, mMat);
-
-//            Log.i("BitmapToMat(antes)","Lets see: mMatDst"+
-//                    "\nchannels -> "+ String.valueOf(mMatDst.channels())+
-//                    "\ntype -> "+ String.valueOf(mMatDst.type())+
-//                    "\nrows -> "+ String.valueOf(mMatDst.rows())+
-//                    "\ncols -> "+ String.valueOf(mMatDst.cols())
-//            );
-
             Imgproc.cvtColor(mMat,mMat,Imgproc.COLOR_RGBA2GRAY);
 
+            watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr(),progressChanged,progressChangedBilateral);
 
-
-
-//            Imgproc.cvtColor(mMatDst, mMatDst, Imgproc.COLOR_BGRA2GRAY);//errado
-            watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
-//                mMatDst=watershedJava(mMat);
-
-
-            Log.i("MatToBitmap(Depois)","Lets see: mMatDst"+
-                    "\nchannels -> "+ String.valueOf(mMatDst.channels())+
-                    "\ntype -> "+ String.valueOf(mMatDst.type())+
-                    "\nrows -> "+ String.valueOf(mMatDst.rows())+
-                    "\ncols -> "+ String.valueOf(mMatDst.cols())
-            );
             Utils.matToBitmap(mMatDst,lastBitmap);
-            Log.i("MatToBitmap(Depois)","Lets see lastBitmap"+
-                    "\ngetHeight -> "+ String.valueOf(lastBitmap.getHeight())+
-                    "\ngetWidth -> "+ String.valueOf(lastBitmap.getWidth())+
-                    "\nconfig -> "+ String.valueOf(lastBitmap.getConfig())
-            );
-
-
-
-
 
             imgPicture.setImageBitmap(lastBitmap);
 
@@ -291,6 +237,13 @@ public class GalleryActivity extends AppCompatActivity {
                 "\nrows -> "+ rows+
                 "\ncols -> "+ cols
         );
+
+        //            Log.i("Click Watershed",lastBitmap.getConfig().name());
+//            Log.i("BitmapToMat(Antes)","Lets see lastBitmap"+
+//                    "\ngetHeight -> "+ String.valueOf(lastBitmap.getHeight())+
+//                    "\ngetWidth -> "+ String.valueOf(lastBitmap.getWidth())+
+//                    "\nconfig -> "+ String.valueOf(lastBitmap.getConfig())
+//            );
     }
 
     private class MyTask extends AsyncTask<String, Integer, String> {
@@ -310,7 +263,7 @@ public class GalleryActivity extends AppCompatActivity {
                 Utils.bitmapToMat(lastBitmap, mMat);
 
 //            TODO: watershed aqui
-                watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
+//                watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
 //                mMatDst=watershedJava(mMat);
 
                 Utils.matToBitmap(mMatDst,lastBitmap);
@@ -332,7 +285,7 @@ public class GalleryActivity extends AppCompatActivity {
         }
     }
 
-    public native void watershed(long addrGray,long addrRgba);
+    public native void watershed(long addrGray,long addrRgba, int sobelThreshold,int bilateralParameter);
 
 
 
