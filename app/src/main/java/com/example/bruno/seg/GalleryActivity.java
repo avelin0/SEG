@@ -166,23 +166,21 @@ public class GalleryActivity extends AppCompatActivity {
 
 //    TODO: linhas / coluna
     public void ClickWatershed(View v){
-//        new MyTask().execute("lastBitmap");
-
-        if(lastBitmap!= null  ) {
-            mMat=new Mat();
-            mMatDst=new Mat();
-
-            Utils.bitmapToMat(lastBitmap, mMat);
-            Imgproc.cvtColor(mMat,mMat,Imgproc.COLOR_RGBA2GRAY);
-
-            watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr(),progressChanged,progressChangedBilateral);
-
-            Utils.matToBitmap(mMatDst,lastBitmap);
-
-            imgPicture.setImageBitmap(lastBitmap);
-
-        }
-
+        new MyTask().execute("lastBitmap");
+//        if(lastBitmap!= null  ) {
+//            mMat=new Mat();
+//            mMatDst=new Mat();
+//
+//            Utils.bitmapToMat(lastBitmap, mMat);
+//            Imgproc.cvtColor(mMat,mMat,Imgproc.COLOR_RGBA2GRAY);
+//
+//            watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr(),progressChanged,progressChangedBilateral);
+//
+//            Utils.matToBitmap(mMatDst,lastBitmap);
+//
+//            imgPicture.setImageBitmap(lastBitmap);
+//
+//        }
     }
 
     public void ClickWatershedJava(View v){
@@ -258,13 +256,13 @@ public class GalleryActivity extends AppCompatActivity {
             String str = strings[0];
 
             if(lastBitmap!= null  ) {
-                mMat=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-                mMatDst=new Mat(lastBitmap.getHeight(), lastBitmap.getWidth(), CvType.CV_8U, new Scalar(4));
-                Utils.bitmapToMat(lastBitmap, mMat);
+                mMat=new Mat();
+                mMatDst=new Mat();
 
-//            TODO: watershed aqui
-//                watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
-//                mMatDst=watershedJava(mMat);
+                Utils.bitmapToMat(lastBitmap, mMat);
+                Imgproc.cvtColor(mMat,mMat,Imgproc.COLOR_RGBA2GRAY);
+
+                watershed(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr(),progressChanged,progressChangedBilateral);
 
                 Utils.matToBitmap(mMatDst,lastBitmap);
 
