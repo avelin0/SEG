@@ -308,8 +308,8 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershed(
     VMAX = 100000000000;
     LMAX = 100000000000;
 
-    lab = Mat::zeros(img.cols,img.rows,CV_32FC3);
-    val = Mat::zeros(img.cols,img.rows,CV_32FC3);
+    lab = Mat::zeros(img.rows,img.cols,CV_32FC3);
+    val = Mat::zeros(img.rows,img.cols,CV_32FC3);
 
     for (int x = 0; x < img.rows; x++) {
         for (int y = 0; y < img.cols; y++) {

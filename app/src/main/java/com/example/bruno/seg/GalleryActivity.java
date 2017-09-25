@@ -3,6 +3,7 @@ package com.example.bruno.seg;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -174,19 +175,15 @@ public class GalleryActivity extends AppCompatActivity {
 
             Utils.bitmapToMat(lastBitmap, mMat);
             Imgproc.cvtColor(mMat, mMat, Imgproc.COLOR_RGBA2GRAY);
-
             watershed(mMat.getNativeObjAddr(), mMatDst.getNativeObjAddr(), progressChanged, progressChangedBilateral);
-            letsSeeMat(mMatDst);
 
-//            bm = Bitmap.createBitmap(mMatDst.cols(), mMatDst.rows(),Bitmap.Config.ARGB_8888);//consegue, mas da problema de alocacao de memoria
-            letsSeeBitmap(lastBitmap);
             Utils.matToBitmap(mMatDst, lastBitmap);
-
             imgPicture.setImageBitmap(lastBitmap);
 
 
         }
     }
+
 
     public void ClickWatershedJava(View v) {
 
