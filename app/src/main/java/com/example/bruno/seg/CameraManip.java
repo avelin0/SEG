@@ -228,7 +228,6 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
     public native void FindFeatures(long addrGray,long addrRgba);
 
     public native void salt(long matAddrSrc, int nbrElem,int mRows, int mCols);
-    public native void thresh(long matAddrRgba,long matDst);
 
 
 }

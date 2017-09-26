@@ -62,6 +62,7 @@ public class GalleryActivity extends AppCompatActivity {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressChanged = progress;
+                ClickWatershed(null);
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -78,6 +79,7 @@ public class GalleryActivity extends AppCompatActivity {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressChangedBilateral = progress;
+                ClickWatershed(null);
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
