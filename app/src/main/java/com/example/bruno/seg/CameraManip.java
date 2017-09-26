@@ -27,7 +27,7 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
     private static final int       VIEW_MODE_GRAY     = 1;
     private static final int       VIEW_MODE_BILATERALFILTER = 2;
     private static final int       VIEW_MODE_MORPHOOP = 5;
-    private static final int       VIEW_MODE_WATERSHED = 7;
+//    private static final int       VIEW_MODE_WATERSHED = 7;
     private static final int       VIEW_MODE_SOBEL = 6;
     private static final int       VIEW_MODE_SIFT = 9;
 
@@ -41,7 +41,7 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
     private MenuItem               mItemPreviewBilateralFilter;
     private MenuItem               mItemPreviewMorphoOp;
     private MenuItem               mItemPreviewSobel;
-    private MenuItem               mItemPreviewWatershed;
+//    private MenuItem               mItemPreviewWatershed;
     private MenuItem               mItemPreviewSift;
 
     private CameraBridgeViewBase   mOpenCvCameraView;
@@ -89,7 +89,7 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
         mItemPreviewBilateralFilter = menu.add("Bilateral Filter C++");
         mItemPreviewMorphoOp = menu.add("Morphologic Operation C++");
         mItemPreviewSift = menu.add("Sift C++");
-        mItemPreviewWatershed = menu.add("Watershed OpenCV");
+//        mItemPreviewWatershed = menu.add("Watershed OpenCV");
         return true;
     }
 
@@ -162,10 +162,10 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
                 morphoOp(mGray.getNativeObjAddr(),mRgba.getNativeObjAddr());
                 break;
 
-            case VIEW_MODE_WATERSHED:
-                mRgba=inputFrame.rgba();
-                mRgba = watershed(mRgba);
-                break;
+//            case VIEW_MODE_WATERSHED:
+//                mRgba=inputFrame.rgba();
+//                mRgba = watershed(mRgba);
+//                break;
             case VIEW_MODE_SIFT:
                 FindFeatures(inputFrame.rgba().getNativeObjAddr(),mRgba.getNativeObjAddr());
                 break;
@@ -174,27 +174,27 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
         return mRgba;
     }
 
-    public Mat watershed(Mat mInput){
-        Mat threeChannel = new Mat();
-        Imgproc.cvtColor(mInput, mInput, Imgproc.COLOR_BGRA2BGR);
-        Imgproc.cvtColor(mInput, threeChannel, Imgproc.COLOR_BGR2GRAY);
-        Imgproc.threshold(threeChannel, threeChannel, 100, 255, Imgproc.THRESH_BINARY);
-
-        Mat fg = new Mat(mInput.size(),CvType.CV_8U);
-        Imgproc.erode(threeChannel,fg,new Mat(),new Point(-1,-1),2);
-
-        Mat bg = new Mat(mInput.size(),CvType.CV_8U);
-        Imgproc.dilate(threeChannel,bg,new Mat(),new Point(-1,-1),3);
-        Imgproc.threshold(bg,bg,1, 128,Imgproc.THRESH_BINARY_INV);
-
-        Mat markers = new Mat(mInput.size(),CvType.CV_8U, new Scalar(0));
-        Core.add(fg, bg, markers);
-        markers.convertTo(markers, CvType.CV_32S);
-        Imgproc.watershed(mInput, markers);
-        markers.convertTo(markers,CvType.CV_8U);
-
-        return markers;
-    }
+//    public Mat watershed(Mat mInput){
+//        Mat threeChannel = new Mat();
+//        Imgproc.cvtColor(mInput, mInput, Imgproc.COLOR_BGRA2BGR);
+//        Imgproc.cvtColor(mInput, threeChannel, Imgproc.COLOR_BGR2GRAY);
+//        Imgproc.threshold(threeChannel, threeChannel, 100, 255, Imgproc.THRESH_BINARY);
+//
+//        Mat fg = new Mat(mInput.size(),CvType.CV_8U);
+//        Imgproc.erode(threeChannel,fg,new Mat(),new Point(-1,-1),2);
+//
+//        Mat bg = new Mat(mInput.size(),CvType.CV_8U);
+//        Imgproc.dilate(threeChannel,bg,new Mat(),new Point(-1,-1),3);
+//        Imgproc.threshold(bg,bg,1, 128,Imgproc.THRESH_BINARY_INV);
+//
+//        Mat markers = new Mat(mInput.size(),CvType.CV_8U, new Scalar(0));
+//        Core.add(fg, bg, markers);
+//        markers.convertTo(markers, CvType.CV_32S);
+//        Imgproc.watershed(mInput, markers);
+//        markers.convertTo(markers,CvType.CV_8U);
+//
+//        return markers;
+//    }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.i(TAG, "called onOptionsItemSelected; selected item: " + item);
@@ -209,9 +209,11 @@ public class CameraManip extends AppCompatActivity implements CameraBridgeViewBa
             mViewMode = VIEW_MODE_MORPHOOP;
         } else if (item == mItemPreviewSobel) {
             mViewMode = VIEW_MODE_SOBEL;
-        }else if (item == mItemPreviewWatershed) {
-            mViewMode = VIEW_MODE_WATERSHED;
-        } else if (item == mItemPreviewSift) {
+        }
+//        else if (item == mItemPreviewWatershed) {
+//            mViewMode = VIEW_MODE_WATERSHED;
+//        }
+        else if (item == mItemPreviewSift) {
             mViewMode = VIEW_MODE_SIFT;
         }
         return true;

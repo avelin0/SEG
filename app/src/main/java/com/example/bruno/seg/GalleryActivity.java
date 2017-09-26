@@ -168,7 +168,6 @@ public class GalleryActivity extends AppCompatActivity {
         }
     }
 
-    //    TODO: linhas / coluna
     public void ClickWatershed(View v) {
 //        new MyTask().execute("lastBitmap");
         if (lastBitmap != null) {
@@ -186,46 +185,45 @@ public class GalleryActivity extends AppCompatActivity {
         }
     }
 
+//    public void ClickWatershedJava(View v) {
+//
+//        if (lastBitmap != null) {
+//            mMat = new Mat();
+//            mMatDst = new Mat();
+//
+//            Utils.bitmapToMat(lastBitmap, mMat);
+//
+//            mMatDst = watershedJava(mMat);
+//
+//            Utils.matToBitmap(mMatDst, lastBitmap);
+//
+//            imgPicture.setImageBitmap(lastBitmap);
+//
+//        }
+//
+//    }
 
-    public void ClickWatershedJava(View v) {
-
-        if (lastBitmap != null) {
-            mMat = new Mat();
-            mMatDst = new Mat();
-
-            Utils.bitmapToMat(lastBitmap, mMat);
-
-            mMatDst = watershedJava(mMat);
-
-            Utils.matToBitmap(mMatDst, lastBitmap);
-
-            imgPicture.setImageBitmap(lastBitmap);
-
-        }
-
-    }
-
-    public Mat watershedJava(Mat mInput) {
-        Mat threeChannel = new Mat();
-        Imgproc.cvtColor(mInput, mInput, Imgproc.COLOR_BGRA2BGR);
-        Imgproc.cvtColor(mInput, threeChannel, Imgproc.COLOR_BGR2GRAY);
-        Imgproc.threshold(threeChannel, threeChannel, 100, 255, Imgproc.THRESH_BINARY);
-
-        Mat fg = new Mat(mInput.size(), CvType.CV_8U);
-        Imgproc.erode(threeChannel, fg, new Mat(), new Point(-1, -1), 2);
-
-        Mat bg = new Mat(mInput.size(), CvType.CV_8U);
-        Imgproc.dilate(threeChannel, bg, new Mat(), new Point(-1, -1), 3);
-        Imgproc.threshold(bg, bg, 1, 128, Imgproc.THRESH_BINARY_INV);
-
-        Mat markers = new Mat(mInput.size(), CvType.CV_8U, new Scalar(0));
-        Core.add(fg, bg, markers);
-        markers.convertTo(markers, CvType.CV_32S);
-        Imgproc.watershed(mInput, markers);
-        markers.convertTo(markers, CvType.CV_8U);
-
-        return markers;
-    }
+//    public Mat watershedJava(Mat mInput) {
+//        Mat threeChannel = new Mat();
+//        Imgproc.cvtColor(mInput, mInput, Imgproc.COLOR_BGRA2BGR);
+//        Imgproc.cvtColor(mInput, threeChannel, Imgproc.COLOR_BGR2GRAY);
+//        Imgproc.threshold(threeChannel, threeChannel, 100, 255, Imgproc.THRESH_BINARY);
+//
+//        Mat fg = new Mat(mInput.size(), CvType.CV_8U);
+//        Imgproc.erode(threeChannel, fg, new Mat(), new Point(-1, -1), 2);
+//
+//        Mat bg = new Mat(mInput.size(), CvType.CV_8U);
+//        Imgproc.dilate(threeChannel, bg, new Mat(), new Point(-1, -1), 3);
+//        Imgproc.threshold(bg, bg, 1, 128, Imgproc.THRESH_BINARY_INV);
+//
+//        Mat markers = new Mat(mInput.size(), CvType.CV_8U, new Scalar(0));
+//        Core.add(fg, bg, markers);
+//        markers.convertTo(markers, CvType.CV_32S);
+//        Imgproc.watershed(mInput, markers);
+//        markers.convertTo(markers, CvType.CV_8U);
+//
+//        return markers;
+//    }
 
     private void letsSeeMat(Mat pMat) {
         Log.i("Lets see: ", "Mat " +
