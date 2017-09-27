@@ -58,8 +58,8 @@ void printMat(Mat mat, string str){
  *  de 0 a 255, caso os elementos vizinhos dessa matriz estejam com o mesmo valor, a cor sera a mesma,
  *  caso não, colore com cores diferentes.
  *
- *  Obs: este algoritmo foi cedido pelo Thiago e Felipe, em seu trabalho de PFC no IME no ano de
- *  2016.
+ *  Obs: este algoritmo encontra-se na propria documentacao do codigo watershed implementado
+ *      no site do opencv
  *
  * \param Mat imagem em formato da matriz a ser manipulada
  * \param int comprimento da janela, valor default = 1
@@ -491,8 +491,7 @@ JNIEXPORT void JNICALL Java_com_example_bruno_seg_CameraManip_morphoOp(JNIEnv *e
 }
 
 
-Mat watershedOpencv(Mat src, Mat srcAux)
-{
+Mat watershedOpencv(Mat src, Mat srcAux) {
     // Change the background from white to black, since that will help later to extract
     // better results during the use of Distance Transform
     for( int x = 0; x < src.rows; x++ ) {
@@ -588,39 +587,23 @@ Mat watershedOpencv(Mat src, Mat srcAux)
 }
 
 
-//void mmain()
-//{
-//    int start = clock();
-//    char *p=argv[0];
-//    string origin="", destination="";
-//    for(int i=0; i<argc; i++){
-//        p = argv[i];
-//        if(strcmp(p, "-o") == 0){
-//            origin = argv[i+1];
-//        }
-//        if(strcmp(p, "-d") == 0){
-//            destination = argv[i+1];
-//        }
-//    }
-//    if(origin.compare("") == 0){
-//        cout<<"NO ORIGIN"<<endl;
-//        return -1;
-//    }else if(destination.compare("") == 0){
-//        cout<<"NO DESTINATION"<<endl;
-//        return -1;
-//    }
-//
-//    Mat src = imread(origin);
-//    Mat srcAux = src.clone();
-//    cvtColor(srcAux, srcAux, CV_BGR2GRAY);
-//    Mat result = watershedOpencv(src, srcAux);
-//
-//    imwrite(destination,result);
-//    int end = clock();
-//    cout<<CLOCKS_PER_SEC<<"clocks por segundo"<<endl;
-//    std::cout << "it took " << end - start << "ticks, or " << ((float)end - start)/CLOCKS_PER_SEC << "seg" << std::endl;
-//    return 0;
-//}
+
+JNIEXPORT void JNICALL Java_com_example_bruno_seg_GalleryActivity_watershedOpencv(
+        JNIEnv *env, jobject obj,
+        jlong scrGray,
+        jlong dst
+) {
+
+    cv::Mat &srcGray = *((cv::Mat *) scrGray);
+    cv::Mat& matDst = *((cv::Mat*)dst);
+
+
+    Mat src = srcGray.clone();
+    cvtColor(src, src, CV_BGR2GRAY);
+    Mat result = watershedOpencv(src, src);
+    matDst=result.clone();
+
+}
 }
 
 

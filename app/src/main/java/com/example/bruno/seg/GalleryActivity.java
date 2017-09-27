@@ -62,7 +62,7 @@ public class GalleryActivity extends AppCompatActivity {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressChanged = progress;
-                ClickWatershed(null);
+
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -70,6 +70,7 @@ public class GalleryActivity extends AppCompatActivity {
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
+                ClickWatershed(null);
                 Toast.makeText(GalleryActivity.this, "Sobel seek bar progress:" + progressChanged,
                         Toast.LENGTH_SHORT).show();
             }
@@ -79,7 +80,7 @@ public class GalleryActivity extends AppCompatActivity {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressChangedBilateral = progress;
-                ClickWatershed(null);
+
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -87,6 +88,7 @@ public class GalleryActivity extends AppCompatActivity {
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
+                ClickWatershed(null);
                 Toast.makeText(GalleryActivity.this, "Bilateral seek bar progress:" + progressChangedBilateral,
                         Toast.LENGTH_SHORT).show();
             }
@@ -185,52 +187,37 @@ public class GalleryActivity extends AppCompatActivity {
         }
     }
 
-//    public void ClickWatershedJava(View v) {
-//
-//        if (lastBitmap != null) {
-//            mMat = new Mat();
-//            mMatDst = new Mat();
-//
-//            Utils.bitmapToMat(lastBitmap, mMat);
-//
-//            mMatDst = watershedJava(mMat);
-//
-//            Utils.matToBitmap(mMatDst, lastBitmap);
-//
-//            imgPicture.setImageBitmap(lastBitmap);
-//
-//        }
-//
-//    }
+    public void ClickWatershedOpencv(View v) {
 
-//    public Mat watershedJava(Mat mInput) {
-//        Mat threeChannel = new Mat();
-//        Imgproc.cvtColor(mInput, mInput, Imgproc.COLOR_BGRA2BGR);
-//        Imgproc.cvtColor(mInput, threeChannel, Imgproc.COLOR_BGR2GRAY);
-//        Imgproc.threshold(threeChannel, threeChannel, 100, 255, Imgproc.THRESH_BINARY);
-//
-//        Mat fg = new Mat(mInput.size(), CvType.CV_8U);
-//        Imgproc.erode(threeChannel, fg, new Mat(), new Point(-1, -1), 2);
-//
-//        Mat bg = new Mat(mInput.size(), CvType.CV_8U);
-//        Imgproc.dilate(threeChannel, bg, new Mat(), new Point(-1, -1), 3);
-//        Imgproc.threshold(bg, bg, 1, 128, Imgproc.THRESH_BINARY_INV);
-//
-//        Mat markers = new Mat(mInput.size(), CvType.CV_8U, new Scalar(0));
-//        Core.add(fg, bg, markers);
-//        markers.convertTo(markers, CvType.CV_32S);
-//        Imgproc.watershed(mInput, markers);
-//        markers.convertTo(markers, CvType.CV_8U);
-//
-//        return markers;
-//    }
+        if (lastBitmap != null) {
+
+
+
+            mMat = new Mat();
+            mMatDst = new Mat(lastBitmap.getHeight(),lastBitmap.getWidth(),CvType.CV_32SC1);
+            Utils.bitmapToMat(lastBitmap, mMat);
+            Imgproc.cvtColor(mMat, mMat, Imgproc.COLOR_RGBA2RGB);
+            letsSeeMat(mMat);
+            letsSeeMat(mMatDst);
+
+//            TODO: solve an error here
+            watershedOpencv(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
+
+            Utils.matToBitmap(mMatDst, lastBitmap);
+            imgPicture.setImageBitmap(lastBitmap);
+        }
+    }
+
 
     private void letsSeeMat(Mat pMat) {
         Log.i("Lets see: ", "Mat " +
                 "\nHeight -> " + pMat.height()+
                 "\nWidth -> " + pMat.width() +
                 "\nrows -> " + pMat.rows() +
-                "\ncols -> " + pMat.cols()
+                "\ncols -> " + pMat.cols()+
+                "\nchannels -> " + pMat.channels()+
+                "\ntype -> " + String.valueOf(pMat.type())
+
         );
 
 
@@ -286,6 +273,7 @@ public class GalleryActivity extends AppCompatActivity {
     }
 
     public native void watershed(long addrGray,long addrRgba, int sobelThreshold,int bilateralParameter);
+    public native void watershedOpencv(long addrGray,long addrRgba);
 
 
 
