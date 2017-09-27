@@ -197,8 +197,6 @@ public class GalleryActivity extends AppCompatActivity {
             mMatDst = new Mat(lastBitmap.getHeight(),lastBitmap.getWidth(),CvType.CV_32SC1);
             Utils.bitmapToMat(lastBitmap, mMat);
             Imgproc.cvtColor(mMat, mMat, Imgproc.COLOR_RGBA2RGB);
-            letsSeeMat(mMat);
-            letsSeeMat(mMatDst);
 
 //            TODO: solve an error here
             watershedOpencv(mMat.getNativeObjAddr(),mMatDst.getNativeObjAddr());
