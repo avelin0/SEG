@@ -3,7 +3,6 @@ package com.example.bruno.seg;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,11 +18,8 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
@@ -171,15 +167,14 @@ public class GalleryActivity extends AppCompatActivity {
     }
 
     public void ClickWatershed(View v) {
-//        new MyTask().execute("lastBitmap");
         if (lastBitmap != null) {
             mMat = new Mat();
             mMatDst = new Mat();
 
             Utils.bitmapToMat(lastBitmap, mMat);
             Imgproc.cvtColor(mMat, mMat, Imgproc.COLOR_RGBA2GRAY);
-            watershed(mMat.getNativeObjAddr(), mMatDst.getNativeObjAddr(), progressChanged, progressChangedBilateral);
-
+            watershed(mMat.getNativeObjAddr(), mMatDst.getNativeObjAddr(),
+                    progressChanged, progressChangedBilateral);
             Utils.matToBitmap(mMatDst, lastBitmap);
             imgPicture.setImageBitmap(lastBitmap);
 
