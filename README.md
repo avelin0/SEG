@@ -7,15 +7,13 @@
 
 ## Instalação
 ```sh
-Instale o OpenCV no dispositivo Android pelo link 
+Instale o OpenCV no dispositivo Android disponível no ítem abaixo.
 ```
 ```sh
-Baixe o Aplicativo disponível no link ... e o instale em seu dispositivo Android. 
+Baixe o Aplicativo disponível no ítem abaixo.
 ```
 
 ## Links
-I
-## Imagens de teste
 - [Aplicativo](https://www.google.com)
 - [OpenCV](https://www.google.com)
 - [Imagens de Teste](https://www.google.com)
