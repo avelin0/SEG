@@ -2,6 +2,13 @@
 > SEG é um aplicativo em ambiente Android capaz de realizar a segmentação de imagens oriundas de um dataset - armazenadas no próprio dispositivo móvel pelo algoritmo de segmentação Watershed.
 > Além disso, você pode verificar o funcionamento dos filtros de pré-processamento através da câmera.
  
+ Inline-style: 
+![alt text](https://drive.google.com/open?id=0B_8nyUDljo0ybVMwaF9Ob1ZkMGc "Logo Title Text 1")
+
+Inline-style: 
+![alt text](https://drive.google.com/open?id=0B_8nyUDljo0yYUhtLUNHVDQzUlE "Logo Title Text 1")
+
+
 
 ![](header.png)
 
