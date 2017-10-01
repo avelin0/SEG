@@ -23,6 +23,6 @@ Baixe o Aplicativo disponível no ítem abaixo e o instale.
 
 ## Contato
 Bruno Avelino  – avel.bruno@gmail.com
-
+Jayme Boarin - jayme.boarin1@gmail.com
 
 
